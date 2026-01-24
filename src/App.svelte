@@ -1,47 +1,146 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import Grid from './lib/Grid.svelte'
+
+  let gridWidth = $state(15)
+  let gridHeight = $state(15)
+  let startX = $state(2)
+  let startY = $state(2)
+  let moves = $state(['2R', '3B', '1L', '2RB', '3T', '4R'])
+
+  function addMove() {
+    const moveOptions = ['1R', '2R', '3R', '1L', '2L', '3L', '1B', '2B', '3B', '1T', '2T', '3T', '2RB', '2LB', '2RT', '2LT']
+    const randomMove = moveOptions[Math.floor(Math.random() * moveOptions.length)]
+    moves = [...moves, randomMove]
+  }
+
+  function removeMove() {
+    if (moves.length > 0) {
+      moves = moves.slice(0, -1)
+    }
+  }
+
+  function resetMoves() {
+    moves = []
+  }
 </script>
 
 <main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
+  <h1>Grid Drawing</h1>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>
+        Grid Width:
+        <input type="number" bind:value={gridWidth} min="5" max="30" />
+      </label>
+      <label>
+        Grid Height:
+        <input type="number" bind:value={gridHeight} min="5" max="30" />
+      </label>
+    </div>
+    <div class="control-group">
+      <label>
+        Start X:
+        <input type="number" bind:value={startX} min="0" max={gridWidth - 1} />
+      </label>
+      <label>
+        Start Y:
+        <input type="number" bind:value={startY} min="0" max={gridHeight - 1} />
+      </label>
+    </div>
+    <div class="control-group">
+      <button onclick={addMove}>Add Random Move</button>
+      <button onclick={removeMove}>Remove Last Move</button>
+      <button onclick={resetMoves}>Reset Moves</button>
+    </div>
+    <div class="moves-display">
+      <strong>Moves:</strong> {moves.join(', ') || '(none)'}
+    </div>
   </div>
-  <h1>Vite + Svelte</h1>
 
-  <div class="card">
-    <Counter />
+  <div class="grid-wrapper">
+    <Grid
+      {gridWidth}
+      {gridHeight}
+      {startX}
+      {startY}
+      {moves}
+    />
   </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+
+  h1 {
+    text-align: center;
+    margin: 0;
   }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
-  .read-the-docs {
-    color: #888;
+
+  .control-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .control-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .control-group input {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #242424;
+    color: inherit;
+    width: 80px;
+  }
+
+  .control-group button {
+    padding: 0.6em 1.2em;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.25s;
+  }
+
+  .control-group button:hover {
+    border-color: #646cff;
+  }
+
+  .moves-display {
+    padding: 0.5rem;
+    background-color: #242424;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+
+  .grid-wrapper {
+    width: 100%;
+    height: 600px;
+    min-height: 400px;
   }
 </style>
