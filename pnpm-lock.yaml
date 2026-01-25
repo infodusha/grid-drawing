@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      sv-router:
+        specifier: ^0.13.0
+        version: 0.13.0(svelte@5.48.2)
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^6.2.4
@@ -460,6 +464,12 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
+  sv-router@0.13.0:
+    resolution: {integrity: sha512-3GBBBrzuIPgL1HauVjq37r+tAwaYZCMMdk2/2Y9lhpL5pqKRNHwOah23IYIeuV9TBpbq/BSnmawbaWlt7L2zCg==}
+    hasBin: true
+    peerDependencies:
+      svelte: ^5
+
   svelte-check@4.3.5:
     resolution: {integrity: sha512-e4VWZETyXaKGhpkxOXP+B/d0Fp/zKViZoJmneZWe/05Y2aqSKj3YN2nLfYPJBQ87WEiY4BQCQ9hWGu9mPT1a1Q==}
     engines: {node: '>= 18.0.0'}
@@ -860,6 +870,11 @@ snapshots:
       mri: 1.2.0
 
   source-map-js@1.2.1: {}
+
+  sv-router@0.13.0(svelte@5.48.2):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.48.2
 
   svelte-check@4.3.5(picomatch@4.0.3)(svelte@5.48.2)(typescript@5.9.3):
     dependencies:
