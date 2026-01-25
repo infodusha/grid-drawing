@@ -6,14 +6,14 @@
   <div class="error-content">
     <div class="error-number">404</div>
     
-    <h1>Page Not Found</h1>
+    <h1>Страница не найдена</h1>
     
     <p class="error-message">
-      Looks like you've wandered off the grid! The page you're looking for doesn't exist.
+      Похоже, вы забрели на не ту страницу. Страница, которую вы ищете, не существует.
     </p>
     
     <a class="home-button" href={p('/')}>
-      Return to Grid
+      Вернуться на главную
     </a>
   </div>
 </div>
