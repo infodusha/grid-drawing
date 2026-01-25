@@ -1,20 +1,19 @@
 <script lang="ts">
-  import { p } from 'sv-router/generated';
+  import { p } from "sv-router/generated";
 </script>
 
 <div class="not-found-container">
   <div class="error-content">
     <div class="error-number">404</div>
-    
+
     <h1>Страница не найдена</h1>
-    
+
     <p class="error-message">
-      Похоже, вы забрели на не ту страницу. Страница, которую вы ищете, не существует.
+      Похоже, вы забрели на не ту страницу. Страница, которую вы ищете, не
+      существует.
     </p>
-    
-    <a class="home-button" href={p('/')}>
-      Вернуться на главную
-    </a>
+
+    <a class="home-button" href={p("/")}> Вернуться на главную </a>
   </div>
 </div>
 

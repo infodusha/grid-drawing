@@ -19,7 +19,9 @@
 
 <style>
   .start-dot {
-    transition: cx 0.3s ease-out, cy 0.3s ease-out;
+    transition:
+      cx 0.3s ease-out,
+      cy 0.3s ease-out;
   }
 
   .start-dot.animate {

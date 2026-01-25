@@ -12,16 +12,20 @@
     pathString,
     pathLength,
     animatedLength,
-    previousPathString = '',
+    previousPathString = "",
     previousPathLength = 0,
     isAnimatingBackwards = false,
   }: Props = $props();
 
   const displayPath = $derived(
-    isAnimatingBackwards && previousPathString ? previousPathString : pathString
+    isAnimatingBackwards && previousPathString
+      ? previousPathString
+      : pathString,
   );
   const displayPathLength = $derived(
-    isAnimatingBackwards && previousPathLength > 0 ? previousPathLength : pathLength
+    isAnimatingBackwards && previousPathLength > 0
+      ? previousPathLength
+      : pathLength,
   );
 </script>
 

@@ -1,13 +1,24 @@
 <script lang="ts">
-  import { MoveSequence } from './MoveSequence';
-  import { calculatePathCoordinates, buildPathString, calculatePathLength } from './utils/pathCalculator';
-  import { gridToSvg } from './utils/coordinateConverter';
-  import { createPathAnimation, updatePathAnimation, cleanupPathAnimation } from './utils/pathAnimation';
-  import { createStartDotAnimation, updateStartDotAnimation, cleanupStartDotAnimation } from './utils/startDotAnimation';
-  import GridBackground from './components/GridBackground.svelte';
-  import PathLine from './components/PathLine.svelte';
-  import StartDot from './components/StartDot.svelte';
-
+  import { MoveSequence } from "./MoveSequence";
+  import {
+    calculatePathCoordinates,
+    buildPathString,
+    calculatePathLength,
+  } from "./utils/pathCalculator";
+  import { gridToSvg } from "./utils/coordinateConverter";
+  import {
+    createPathAnimation,
+    updatePathAnimation,
+    cleanupPathAnimation,
+  } from "./utils/pathAnimation";
+  import {
+    createStartDotAnimation,
+    updateStartDotAnimation,
+    cleanupStartDotAnimation,
+  } from "./utils/startDotAnimation";
+  import GridBackground from "./components/GridBackground.svelte";
+  import PathLine from "./components/PathLine.svelte";
+  import StartDot from "./components/StartDot.svelte";
   interface Props {
     moveSequence?: MoveSequence;
   }
@@ -27,7 +38,10 @@
 
   // Calculate cell size based on container dimensions
   const cellSize = $derived(
-    Math.min(containerWidth / effectiveGridWidth, containerHeight / effectiveGridHeight)
+    Math.min(
+      containerWidth / effectiveGridWidth,
+      containerHeight / effectiveGridHeight,
+    ),
   );
 
   // Calculate SVG dimensions
@@ -36,7 +50,7 @@
 
   // Calculate path coordinates from moves
   const pathCoordinates = $derived(
-    calculatePathCoordinates(effectiveMoves, effectiveStartX, effectiveStartY)
+    calculatePathCoordinates(effectiveMoves, effectiveStartX, effectiveStartY),
   );
 
   // Build SVG path string
@@ -60,7 +74,7 @@
       pathLength,
       effectiveStartX,
       effectiveStartY,
-      cellSize
+      cellSize,
     );
 
     return () => {
@@ -69,7 +83,9 @@
   });
 
   // Starting point SVG coordinates
-  const startPoint = $derived(gridToSvg(effectiveStartX, effectiveStartY, cellSize));
+  const startPoint = $derived(
+    gridToSvg(effectiveStartX, effectiveStartY, cellSize),
+  );
 
   // Track if starting coordinates changed (for animation)
   let shouldAnimateDot = $state(false);
@@ -77,9 +93,14 @@
 
   // Detect coordinate changes and trigger animation
   $effect(() => {
-    updateStartDotAnimation(startDotAnimationState, effectiveStartX, effectiveStartY, (value) => {
-      shouldAnimateDot = value;
-    });
+    updateStartDotAnimation(
+      startDotAnimationState,
+      effectiveStartX,
+      effectiveStartY,
+      (value) => {
+        shouldAnimateDot = value;
+      },
+    );
 
     return () => {
       cleanupStartDotAnimation(startDotAnimationState);
@@ -125,7 +146,11 @@
       isAnimatingBackwards={pathAnimationState.isAnimatingBackwards}
     />
 
-    <StartDot x={startPoint.x} y={startPoint.y} shouldAnimate={shouldAnimateDot} />
+    <StartDot
+      x={startPoint.x}
+      y={startPoint.y}
+      shouldAnimate={shouldAnimateDot}
+    />
   </svg>
 </div>
 
