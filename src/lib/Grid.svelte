@@ -1,21 +1,21 @@
 <script lang="ts">
   import { Tween } from 'svelte/motion';
+  import { MoveSequence } from './MoveSequence';
 
   interface Props {
-    gridWidth: number;
-    gridHeight: number;
-    startX: number;
-    startY: number;
-    moves: string[];
+    moveSequence?: MoveSequence;
   }
 
   let {
-    gridWidth = 10,
-    gridHeight = 10,
-    startX = 0,
-    startY = 0,
-    moves = []
+    moveSequence,
   }: Props = $props();
+
+  // Extract values from MoveSequence if provided, otherwise use individual props
+  const effectiveGridWidth = $derived(moveSequence?.gridWidth ?? 10);
+  const effectiveGridHeight = $derived(moveSequence?.gridHeight ?? 10);
+  const effectiveStartX = $derived(moveSequence?.startX ?? 0);
+  const effectiveStartY = $derived(moveSequence?.startY ?? 0);
+  const effectiveMoves = $derived(moveSequence?.moves ?? []);
 
   let containerElement: SVGSVGElement;
   let containerWidth = $state(800);
@@ -23,12 +23,12 @@
 
   // Calculate cell size based on container dimensions
   const cellSize = $derived(
-    Math.min(containerWidth / gridWidth, containerHeight / gridHeight)
+    Math.min(containerWidth / effectiveGridWidth, containerHeight / effectiveGridHeight)
   );
 
   // Calculate SVG dimensions
-  const svgWidth = $derived(gridWidth * cellSize);
-  const svgHeight = $derived(gridHeight * cellSize);
+  const svgWidth = $derived(effectiveGridWidth * cellSize);
+  const svgHeight = $derived(effectiveGridHeight * cellSize);
 
   // Parse move command (e.g., "2R", "3B", "2RB")
   function parseMove(move: string): { dx: number; dy: number } {
@@ -64,14 +64,14 @@
   // Calculate path coordinates from moves
   const pathCoordinates = $derived.by(() => {
     const points: Array<{ x: number; y: number }> = [];
-    let currentX = startX;
-    let currentY = startY;
+    let currentX = effectiveStartX;
+    let currentY = effectiveStartY;
 
     // Add starting point
     points.push({ x: currentX, y: currentY });
 
     // Process each move
-    for (const move of moves) {
+    for (const move of effectiveMoves) {
       const { dx, dy } = parseMove(move);
       currentX += dx;
       currentY += dy;
@@ -138,9 +138,9 @@
   // Animate path when moves change
   $effect(() => {
     const currentPathLength = pathLength;
-    const currentMoves = moves;
-    const currentStartX = startX;
-    const currentStartY = startY;
+    const currentMoves = effectiveMoves;
+    const currentStartX = effectiveStartX;
+    const currentStartY = effectiveStartY;
     
     if (!isPathInitialized) {
       // Initialize without animation
@@ -278,7 +278,7 @@
   });
 
   // Starting point SVG coordinates
-  const startPoint = $derived(gridToSvg(startX, startY));
+  const startPoint = $derived(gridToSvg(effectiveStartX, effectiveStartY));
 
   // Track if starting coordinates just changed (for animation)
   let shouldAnimateDot = $state(false);
@@ -289,8 +289,8 @@
 
   // Detect coordinate changes and trigger animation
   $effect(() => {
-    const x = startX;
-    const y = startY;
+    const x = effectiveStartX;
+    const y = effectiveStartY;
     
     // Skip animation on initial mount
     if (!isInitialized) {

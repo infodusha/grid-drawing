@@ -1,26 +1,105 @@
 <script lang="ts">
   import Grid from './lib/Grid.svelte'
+  import { MoveSequence } from './lib/MoveSequence'
 
-  let gridWidth = $state(15)
-  let gridHeight = $state(15)
-  let startX = $state(2)
-  let startY = $state(2)
-  let moves = $state(['2R', '3B', '1L', '2RB', '3T', '4R'])
+  // Create MoveSequence instance with initial values
+  let moveSequence = $state(
+    new MoveSequence(
+      ['2R', '3B', '1L', '2RB', '3T', '4R'],
+      2,
+      2,
+      15,
+      15
+    )
+  )
+
+  // Helper function to update moveSequence and trigger reactivity
+  function updateMoveSequence(updater: (ms: MoveSequence) => void) {
+    const updated = moveSequence.clone()
+    updater(updated)
+    moveSequence = updated
+  }
+
+  // Derived values for two-way binding with inputs
+  const gridWidth = $derived(moveSequence.gridWidth)
+  const gridHeight = $derived(moveSequence.gridHeight)
+  const startX = $derived(moveSequence.startX)
+  const startY = $derived(moveSequence.startY)
+
+  // Setters for two-way binding
+  function setGridWidth(value: number) {
+    updateMoveSequence((ms) => {
+      ms.gridWidth = value
+    })
+  }
+
+  function setGridHeight(value: number) {
+    updateMoveSequence((ms) => {
+      ms.gridHeight = value
+    })
+  }
+
+  function setStartX(value: number) {
+    updateMoveSequence((ms) => {
+      ms.startX = value
+    })
+  }
+
+  function setStartY(value: number) {
+    updateMoveSequence((ms) => {
+      ms.startY = value
+    })
+  }
 
   function addMove() {
     const moveOptions = ['1R', '2R', '3R', '1L', '2L', '3L', '1B', '2B', '3B', '1T', '2T', '3T', '2RB', '2LB', '2RT', '2LT']
     const randomMove = moveOptions[Math.floor(Math.random() * moveOptions.length)]
-    moves = [...moves, randomMove]
+    updateMoveSequence((ms) => {
+      ms.addMove(randomMove)
+    })
   }
 
   function removeMove() {
-    if (moves.length > 0) {
-      moves = moves.slice(0, -1)
-    }
+    updateMoveSequence((ms) => {
+      ms.removeMove()
+    })
   }
 
   function resetMoves() {
-    moves = []
+    updateMoveSequence((ms) => {
+      ms.clearMoves()
+    })
+  }
+
+  function exportJSON() {
+    const json = moveSequence.toJSON()
+    const jsonString = JSON.stringify(json, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'move-sequence.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function importJSON(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target?.result as string)
+        moveSequence = MoveSequence.fromJSON(json)
+        // Reset file input
+        input.value = ''
+      } catch (error) {
+        alert('Failed to import JSON: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      }
+    }
+    reader.readAsText(file)
   }
 </script>
 
@@ -31,21 +110,21 @@
     <div class="control-group">
       <label>
         Grid Width:
-        <input type="number" bind:value={gridWidth} min="5" max="30" />
+        <input type="number" value={gridWidth} oninput={(e) => setGridWidth(Number((e.target as HTMLInputElement).value))} min="5" max="30" />
       </label>
       <label>
         Grid Height:
-        <input type="number" bind:value={gridHeight} min="5" max="30" />
+        <input type="number" value={gridHeight} oninput={(e) => setGridHeight(Number((e.target as HTMLInputElement).value))} min="5" max="30" />
       </label>
     </div>
     <div class="control-group">
       <label>
         Start X:
-        <input type="number" bind:value={startX} min="0" max={gridWidth - 1} />
+        <input type="number" value={startX} oninput={(e) => setStartX(Number((e.target as HTMLInputElement).value))} min="0" max={gridWidth - 1} />
       </label>
       <label>
         Start Y:
-        <input type="number" bind:value={startY} min="0" max={gridHeight - 1} />
+        <input type="number" value={startY} oninput={(e) => setStartY(Number((e.target as HTMLInputElement).value))} min="0" max={gridHeight - 1} />
       </label>
     </div>
     <div class="control-group">
@@ -53,19 +132,20 @@
       <button onclick={removeMove}>Remove Last Move</button>
       <button onclick={resetMoves}>Reset Moves</button>
     </div>
+    <div class="control-group">
+      <button onclick={exportJSON}>Export JSON</button>
+      <label class="import-button">
+        Import JSON
+        <input type="file" accept=".json" onchange={importJSON} style="display: none;" />
+      </label>
+    </div>
     <div class="moves-display">
-      <strong>Moves:</strong> {moves.join(', ') || '(none)'}
+      <strong>Moves:</strong> {moveSequence.moves.join(', ') || '(none)'}
     </div>
   </div>
 
   <div class="grid-wrapper">
-    <Grid
-      {gridWidth}
-      {gridHeight}
-      {startX}
-      {startY}
-      {moves}
-    />
+    <Grid moveSequence={moveSequence} />
   </div>
 </main>
 
@@ -127,6 +207,23 @@
   }
 
   .control-group button:hover {
+    border-color: #646cff;
+  }
+
+  .import-button {
+    padding: 0.6em 1.2em;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.25s;
+    display: inline-block;
+  }
+
+  .import-button:hover {
     border-color: #646cff;
   }
 
