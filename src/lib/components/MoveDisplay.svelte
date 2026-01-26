@@ -8,7 +8,7 @@
     ArrowUpRight,
     ArrowDownLeft,
     ArrowUpLeft,
-  } from '@lucide/svelte'
+  } from "@lucide/svelte";
 
   interface Props {
     move: string;
@@ -81,11 +81,5 @@
 
   .move-number {
     font-variant-numeric: tabular-nums;
-  }
-
-  .arrow-icon {
-    display: inline-block;
-    vertical-align: middle;
-    flex-shrink: 0;
   }
 </style>
