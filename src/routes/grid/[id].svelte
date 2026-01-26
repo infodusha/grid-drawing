@@ -1,5 +1,384 @@
 <script lang="ts">
+  import { onMount, onDestroy } from "svelte";
+  import { searchParams } from "sv-router";
   import { route } from "sv-router/generated";
+  import { MoveSequence } from "../../lib/MoveSequence";
+  import {
+    PlaybackController,
+    type PlaybackState,
+  } from "../../lib/utils/playback";
+  import Grid from "../../lib/Grid.svelte";
+  import PlaybackControls from "../../lib/components/PlaybackControls.svelte";
+  import MaskToggle from "../../lib/components/MaskToggle.svelte";
+  import MoveLog from "../../lib/components/MoveLog.svelte";
+  import ProgressBar from "../../lib/components/ProgressBar.svelte";
+
+  interface GridItem {
+    id: string;
+    name: string;
+    tags: string[];
+  }
 
   const { id } = route.getParams("/grid/:id");
+
+  const initialMaskState = searchParams.get("mask") === "";
+
+  let loading = $state(true);
+  let error = $state<string | null>(null);
+  let moveSequence = $state<MoveSequence | null>(null);
+  let gridName = $state<string>("");
+  let isMasked = $state(initialMaskState);
+  let playbackController = $state<PlaybackController | null>(null);
+  let playbackState = $state<PlaybackState>({
+    isPlaying: false,
+    currentMoveIndex: 0,
+    speedMultiplier: 1.0,
+  });
+  let revealedMoves = $state<string[]>([]);
+
+  // Create partial MoveSequence with only revealed moves for Grid component
+  const partialMoveSequence = $derived.by(() => {
+    if (!moveSequence) return null;
+
+    const partial = new MoveSequence(
+      revealedMoves,
+      moveSequence.startX,
+      moveSequence.startY,
+      moveSequence.gridWidth,
+      moveSequence.gridHeight,
+    );
+    return partial;
+  });
+
+  onMount(async () => {
+    try {
+      // Load grid data
+      const dataResponse = await fetch(`/data/${id}.json`);
+      if (!dataResponse.ok) {
+        throw new Error(`Failed to load grid data: ${dataResponse.statusText}`);
+      }
+      const gridData = await dataResponse.json();
+      moveSequence = MoveSequence.fromJSON(gridData);
+
+      // Load metadata to get grid name
+      const metadataResponse = await fetch("/data.json");
+      if (metadataResponse.ok) {
+        const metadata: GridItem[] = await metadataResponse.json();
+        const item = metadata.find((item) => item.id === id);
+        if (item) {
+          gridName = item.name;
+        }
+      }
+
+      // Initialize playback controller
+      if (moveSequence) {
+        const controller = new PlaybackController(moveSequence);
+
+        // Set up state change callback
+        controller.onStateChange((state) => {
+          playbackState = { ...state };
+          // Update revealed moves based on current index
+          if (moveSequence) {
+            revealedMoves = moveSequence.moves.slice(0, state.currentMoveIndex);
+          }
+        });
+
+        // Set up move revealed callback (backup, but state change should handle it)
+        controller.onMoveRevealed((moves) => {
+          revealedMoves = [...moves];
+        });
+
+        playbackController = controller;
+
+        // Initialize revealed moves (empty at start since paused)
+        revealedMoves = [];
+      }
+
+      loading = false;
+    } catch (err) {
+      error = err instanceof Error ? err.message : "Unknown error occurred";
+      loading = false;
+    }
+  });
+
+  onDestroy(() => {
+    if (playbackController) {
+      playbackController.destroy();
+    }
+  });
+
+  // Keyboard shortcut: spacebar to play/pause
+  function handleKeyDown(event: KeyboardEvent) {
+    // Only handle spacebar if not typing in an input field
+    if (event.code === "Space" && event.target instanceof HTMLElement) {
+      const isInput =
+        event.target.tagName === "INPUT" ||
+        event.target.tagName === "TEXTAREA" ||
+        event.target.isContentEditable;
+      if (!isInput && playbackController) {
+        event.preventDefault();
+        if (playbackState.isPlaying) {
+          handlePause();
+        } else {
+          handlePlay();
+        }
+      }
+    }
+  }
+
+  $effect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  });
+
+  function handlePlay() {
+    if (playbackController) {
+      playbackController.play();
+    }
+  }
+
+  function handlePause() {
+    if (playbackController) {
+      playbackController.pause();
+    }
+  }
+
+  function handleSpeedChange(speed: number) {
+    if (playbackController) {
+      playbackController.setSpeed(speed);
+    }
+  }
+
+  function toggleMask() {
+    isMasked = !isMasked;
+    if (isMasked) {
+      searchParams.set("mask", "");
+    } else {
+      searchParams.delete("mask");
+    }
+  }
 </script>
+
+<main class="grid-playback-page">
+  {#if loading}
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading grid...</p>
+    </div>
+  {:else if error}
+    <div class="error-container">
+      <p class="error-message">Error: {error}</p>
+    </div>
+  {:else if moveSequence}
+    <div class="header-section">
+      <h1 class="grid-name" class:masked={isMasked}>
+        {gridName || "Untitled Grid"}
+      </h1>
+      <div class="header-controls">
+        <MaskToggle {isMasked} onToggle={toggleMask} />
+      </div>
+    </div>
+
+    <div class="controls-section">
+      <PlaybackControls
+        {playbackController}
+        {playbackState}
+        onPlay={handlePlay}
+        onPause={handlePause}
+        onSpeedChange={handleSpeedChange}
+      />
+    </div>
+
+    <div class="progress-section">
+      <ProgressBar
+        current={playbackState.currentMoveIndex}
+        total={moveSequence.moves.length}
+      />
+    </div>
+
+    <div class="content-grid">
+      <div class="grid-section" class:masked={isMasked}>
+        <Grid moveSequence={partialMoveSequence} />
+      </div>
+
+      <div class="move-log-section">
+        <h2 class="move-log-title">Moves</h2>
+        <MoveLog
+          allMoves={moveSequence.moves}
+          currentIndex={playbackState.currentMoveIndex}
+        />
+      </div>
+    </div>
+  {/if}
+</main>
+
+<style>
+  .grid-playback-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    gap: 1rem;
+  }
+
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #646cff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-container p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+  }
+
+  .error-container {
+    padding: 2rem;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+  }
+
+  .error-message {
+    color: rgba(255, 100, 100, 0.9);
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .grid-name {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.87);
+    transition: all 0.3s ease;
+  }
+
+  .grid-name.masked {
+    filter: blur(8px);
+    opacity: 0.3;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .header-controls {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .controls-section {
+    width: 100%;
+  }
+
+  .progress-section {
+    width: 100%;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .grid-section {
+    transition: all 0.3s ease;
+  }
+
+  .grid-section.masked {
+    filter: blur(12px);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .move-log-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 600px;
+  }
+
+  .move-log-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  @media (prefers-color-scheme: light) {
+    .loading-container p {
+      color: rgba(33, 53, 71, 0.7);
+    }
+
+    .error-container {
+      background-color: #f9f9f9;
+      border-color: rgba(255, 0, 0, 0.2);
+    }
+
+    .error-message {
+      color: rgba(200, 50, 50, 0.9);
+    }
+
+    .grid-name {
+      color: #213547;
+    }
+
+    .move-log-title {
+      color: #213547;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .move-log-section {
+      height: 400px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .grid-playback-page {
+      padding: 1rem;
+    }
+
+    .header-section {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .grid-name {
+      font-size: 1.5rem;
+    }
+  }
+</style>

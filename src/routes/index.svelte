@@ -66,7 +66,7 @@
     if (filteredItems.length === 0) return;
     const randomIndex = Math.floor(Math.random() * filteredItems.length);
     const randomItem = filteredItems[randomIndex];
-    window.location.href = p(`/grid/${randomItem.id}`);
+    window.location.href = p(`/grid/${randomItem.id}?mask`);
   }
 </script>
 
