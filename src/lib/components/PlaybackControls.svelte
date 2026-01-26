@@ -20,7 +20,7 @@
   const speedValue = $derived(playbackState.speedMultiplier);
   const isPlaying = $derived(playbackState.isPlaying);
 
-  function handleSpeedChange(event: Event) {
+  function handleSliderChange(event: Event) {
     const target = event.target as HTMLInputElement;
     const newSpeed = parseFloat(target.value);
     onSpeedChange(newSpeed);
@@ -36,7 +36,7 @@
 </script>
 
 <div class="playback-controls">
-  <button
+  <wired-button
     class="play-pause-button"
     onclick={handlePlayPause}
     disabled={playbackController === null}
@@ -72,21 +72,20 @@
         <polygon points="5 3 19 12 5 21 5 3"></polygon>
       </svg>
     {/if}
-  </button>
+  </wired-button>
 
   <div class="speed-control">
     <label for="speed-slider">Скорость:</label>
-    <input
+    <wired-slider
       id="speed-slider"
-      type="range"
       min="0.25"
       max="3"
       step="0.25"
       value={speedValue}
-      oninput={handleSpeedChange}
+      onchange={handleSliderChange}
       disabled={playbackController === null}
       class="speed-slider"
-    />
+    ></wired-slider>
     <span class="speed-value">{speedValue.toFixed(2)}x</span>
   </div>
 </div>
@@ -108,23 +107,17 @@
     justify-content: center;
     width: 48px;
     height: 48px;
-    border-radius: 50%;
-    border: 1px solid transparent;
-    background-color: #646cff;
-    color: white;
-    cursor: pointer;
-    transition: all 0.25s;
+    min-width: 48px;
     padding: 0;
-  }
-
-  .play-pause-button:hover:not(:disabled) {
-    background-color: #535bf2;
-    transform: scale(1.05);
   }
 
   .play-pause-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .play-pause-button svg {
+    pointer-events: none;
   }
 
   .speed-control {
@@ -142,40 +135,7 @@
 
   .speed-slider {
     flex: 1;
-    height: 6px;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.1);
-    outline: none;
-    -webkit-appearance: none;
-  }
-
-  .speed-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #646cff;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .speed-slider::-webkit-slider-thumb:hover {
-    background: #535bf2;
-  }
-
-  .speed-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #646cff;
-    cursor: pointer;
-    border: none;
-    transition: background 0.2s;
-  }
-
-  .speed-slider::-moz-range-thumb:hover {
-    background: #535bf2;
+    width: 100%;
   }
 
   .speed-slider:disabled {
@@ -199,10 +159,6 @@
 
     .speed-control label {
       color: rgba(33, 53, 71, 0.7);
-    }
-
-    .speed-slider {
-      background: rgba(0, 0, 0, 0.1);
     }
 
     .speed-value {

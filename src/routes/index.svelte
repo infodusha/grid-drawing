@@ -92,13 +92,13 @@
     />
 
     <div class="actions-bar">
-      <button
+      <wired-button
         class="random-button"
         onclick={handleRandomClick}
         disabled={filteredItems.length === 0}
       >
         Случайный
-      </button>
+      </wired-button>
       <span class="results-count">
         {filteredItems.length}
         {filteredItems.length === 1
@@ -117,9 +117,9 @@
     {:else if filteredItems.length === 0}
       <div class="empty-state">
         <p>Не найдено диктантов, соответствующих выбранным фильтрам.</p>
-        <button class="reset-link-button" onclick={resetFilters}>
+        <wired-button class="reset-link-button" onclick={resetFilters}>
           Очистить фильтры
-        </button>
+        </wired-button>
       </div>
     {:else}
       <div class="grid-list">
@@ -201,22 +201,7 @@
   }
 
   .random-button {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    border: 1px solid transparent;
     font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #646cff;
-    color: white;
-    cursor: pointer;
-    transition: all 0.25s;
-  }
-
-  .random-button:hover:not(:disabled) {
-    background-color: #535bf2;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(100, 108, 255, 0.3);
   }
 
   .random-button:disabled {
@@ -244,21 +229,7 @@
   }
 
   .reset-link-button {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
     font-size: 0.875rem;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #242424;
-    color: rgba(255, 255, 255, 0.87);
-    cursor: pointer;
-    transition: all 0.25s;
-  }
-
-  .reset-link-button:hover {
-    border-color: #646cff;
-    background-color: #2a2a2a;
   }
 
   .grid-list {
@@ -298,15 +269,6 @@
       color: rgba(33, 53, 71, 0.7);
     }
 
-    .reset-link-button {
-      background-color: #ffffff;
-      color: #213547;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .reset-link-button:hover {
-      background-color: #f0f0f0;
-    }
   }
 
   @media (max-width: 768px) {

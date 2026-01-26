@@ -9,39 +9,42 @@
   let { id, name, tags, href }: Props = $props();
 </script>
 
-<a class="grid-card" href={href}>
-  <h3 class="grid-name">{name}</h3>
-  <div class="tags-container">
-    {#each tags as tag}
-      <span class="tag">{tag}</span>
-    {/each}
-  </div>
+<a class="grid-card-link" {href}>
+  <wired-card class="grid-card">
+    <h3 class="grid-name">{name}</h3>
+    <div class="tags-container">
+      {#each tags as tag}
+        <span class="tag">{tag}</span>
+      {/each}
+    </div>
+  </wired-card>
 </a>
 
 <style>
+  .grid-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
   .grid-card {
     padding: 1.5rem;
-    background-color: #1a1a1a;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: all 0.25s;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    text-decoration: none;
-    color: inherit;
   }
 
-  .grid-card:hover {
-    border-color: #646cff;
+  .grid-card-link:hover .grid-card {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(100, 108, 255, 0.2);
   }
 
-  .grid-card:focus-visible {
+  .grid-card-link:focus-visible {
     outline: 2px solid #646cff;
     outline-offset: 2px;
+    border-radius: 8px;
   }
 
   .grid-name {
@@ -67,13 +70,7 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .grid-card {
-      background-color: #f9f9f9;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .grid-card:hover {
-      border-color: #646cff;
+    .grid-card-link:hover .grid-card {
       box-shadow: 0 4px 12px rgba(100, 108, 255, 0.15);
     }
 

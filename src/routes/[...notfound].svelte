@@ -13,7 +13,9 @@
       существует.
     </p>
 
-    <a class="home-button" href={p("/")}> Вернуться на главную </a>
+    <a href={p("/")}>
+      <wired-button class="home-button">Вернуться на главную</wired-button>
+    </a>
   </div>
 </div>
 
@@ -54,22 +56,7 @@
   }
 
   .home-button {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
     font-size: 1rem;
-    font-weight: 500;
-    font-family: inherit;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #646cff;
-    border: none;
-    border-radius: 8px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.25s;
-  }
-
-  .home-button:hover {
-    background-color: #535bf2;
   }
 
   @media (prefers-color-scheme: light) {

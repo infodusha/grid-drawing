@@ -12,24 +12,26 @@
 <div class="filter-container">
   <div class="filter-header">
     <h2 class="filter-title">Фильтры</h2>
-    <button
+    <wired-button
       class="reset-button"
       onclick={onReset}
       disabled={selectedTags.size === 0}
     >
       Сбросить
-    </button>
+    </wired-button>
   </div>
   <div class="tags-list">
     {#each availableTags as tag}
-      <label class="tag-checkbox">
-        <input
-          type="checkbox"
+      <wired-button class="tag-button" onclick={() => onTagToggle(tag)}>
+        <wired-checkbox
           checked={selectedTags.has(tag)}
-          onchange={() => onTagToggle(tag)}
-        />
-        <span class="tag-label">{tag}</span>
-      </label>
+          onclick={(e) => {
+            e.stopPropagation();
+            onTagToggle(tag);
+          }}
+        ></wired-checkbox>
+        {tag}
+      </wired-button>
     {/each}
   </div>
 </div>
@@ -58,21 +60,7 @@
   }
 
   .reset-button {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
     font-size: 0.875rem;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #242424;
-    color: rgba(255, 255, 255, 0.87);
-    cursor: pointer;
-    transition: all 0.25s;
-  }
-
-  .reset-button:hover:not(:disabled) {
-    border-color: #646cff;
-    background-color: #2a2a2a;
   }
 
   .reset-button:disabled {
@@ -86,38 +74,16 @@
     gap: 0.75rem;
   }
 
-  .tag-checkbox {
+  .tag-button {
+    font-size: 0.875rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .tag-button wired-checkbox {
     cursor: pointer;
-    padding: 0.5rem 0.75rem;
-    background-color: #242424;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    transition: all 0.25s;
-  }
-
-  .tag-checkbox:hover {
-    border-color: #646cff;
-    background-color: #2a2a2a;
-  }
-
-  .tag-checkbox input[type="checkbox"] {
-    cursor: pointer;
-    accent-color: #646cff;
-  }
-
-  .tag-checkbox input[type="checkbox"]:checked + .tag-label {
-    color: #646cff;
-    font-weight: 500;
-  }
-
-  .tag-label {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.875rem;
-    user-select: none;
-    transition: color 0.25s;
+    flex-shrink: 0;
   }
 
   @media (prefers-color-scheme: light) {
@@ -128,29 +94,6 @@
 
     .filter-title {
       color: #213547;
-    }
-
-    .reset-button {
-      background-color: #ffffff;
-      color: #213547;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .reset-button:hover:not(:disabled) {
-      background-color: #f0f0f0;
-    }
-
-    .tag-checkbox {
-      background-color: #ffffff;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .tag-checkbox:hover {
-      background-color: #f5f5f5;
-    }
-
-    .tag-label {
-      color: rgba(33, 53, 71, 0.7);
     }
   }
 </style>
