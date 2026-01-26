@@ -21,9 +21,15 @@
   import StartDot from "./components/StartDot.svelte";
   interface Props {
     moveSequence?: MoveSequence;
+    animationDuration?: number | null;
+    isPlaying?: boolean;
   }
 
-  let { moveSequence }: Props = $props();
+  let {
+    moveSequence,
+    animationDuration = null,
+    isPlaying = true,
+  }: Props = $props();
 
   // Extract values from MoveSequence if provided, otherwise use defaults
   const effectiveGridWidth = $derived(moveSequence?.gridWidth ?? 10);
@@ -65,7 +71,7 @@
   // Track animated length reactively
   const animatedLength = $derived(pathAnimationState.animatedLength.current);
 
-  // Animate path when moves change
+  // Animate path when moves change, animation duration changes, or playing state changes
   $effect(() => {
     updatePathAnimation(
       pathAnimationState,
@@ -75,6 +81,8 @@
       effectiveStartX,
       effectiveStartY,
       cellSize,
+      animationDuration,
+      isPlaying,
     );
 
     return () => {

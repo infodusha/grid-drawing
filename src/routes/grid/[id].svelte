@@ -37,6 +37,7 @@
   });
   let revealedMoves = $state<string[]>([]);
   let speechAnnouncer = $state<SpeechAnnouncer | null>(null);
+  let animationDuration = $state<number | null>(null);
 
   // Create partial MoveSequence with only revealed moves for Grid component
   const partialMoveSequence = $derived.by(() => {
@@ -104,11 +105,20 @@
           if (moveSequence) {
             revealedMoves = moveSequence.moves.slice(0, state.currentMoveIndex);
           }
+          // Clear animation duration when playback stops or pauses
+          if (!state.isPlaying) {
+            animationDuration = null;
+          }
         });
 
         // Set up move revealed callback (backup, but state change should handle it)
         controller.onMoveRevealed((moves) => {
           revealedMoves = [...moves];
+        });
+
+        // Set up move duration callback for animation timing
+        controller.onMoveDuration((duration) => {
+          animationDuration = duration;
         });
 
         playbackController = controller;
@@ -241,7 +251,11 @@
 
     <div class="content-grid">
       <div class="grid-section" class:masked={isMasked}>
-        <Grid moveSequence={partialMoveSequence} />
+        <Grid
+          moveSequence={partialMoveSequence}
+          {animationDuration}
+          isPlaying={playbackState.isPlaying}
+        />
       </div>
 
       <div class="move-log-section">

@@ -15,6 +15,11 @@ export class PlaybackController {
   private onStateChangeCallback?: (state: PlaybackState) => void;
   private onMoveRevealedCallback?: (revealedMoves: string[]) => void;
   private onMoveAnnounceCallback?: (move: string) => void;
+  private onMoveDurationCallback?: (duration: number) => void;
+
+  // Track remaining delay time when paused
+  private currentMoveDelayStartTime: number | null = null;
+  private remainingDelayTime: number | null = null;
 
   // Base duration per unit of move (in milliseconds)
   private readonly BASE_DURATION_PER_UNIT = 750;
@@ -89,6 +94,13 @@ export class PlaybackController {
   }
 
   /**
+   * Set callback for when a move duration is available (for animation timing)
+   */
+  onMoveDuration(callback: (duration: number) => void) {
+    this.onMoveDurationCallback = callback;
+  }
+
+  /**
    * Notify listeners of state changes
    */
   private notifyStateChange() {
@@ -117,6 +129,8 @@ export class PlaybackController {
     this.state.currentMoveIndex = 0;
     this.pausedTime = 0;
     this.startTime = Date.now();
+    this.remainingDelayTime = null;
+    this.currentMoveDelayStartTime = null;
     this.notifyStateChange();
 
     this.scheduleNextMove();
@@ -140,7 +154,22 @@ export class PlaybackController {
     this.startTime = Date.now() - this.pausedTime;
     this.notifyStateChange();
 
-    this.scheduleNextMove();
+    // If we have remaining delay time, wait for it before scheduling next move
+    if (this.remainingDelayTime !== null && this.remainingDelayTime > 0) {
+      const timeoutId = window.setTimeout(() => {
+        this.remainingDelayTime = null;
+        this.currentMoveDelayStartTime = null;
+        if (this.state.isPlaying) {
+          this.scheduleNextMove();
+        }
+      }, this.remainingDelayTime);
+      this.timeouts.push(timeoutId);
+    } else {
+      // No remaining delay, schedule next move immediately
+      this.remainingDelayTime = null;
+      this.currentMoveDelayStartTime = null;
+      this.scheduleNextMove();
+    }
   }
 
   /**
@@ -158,6 +187,20 @@ export class PlaybackController {
       this.pausedTime = Date.now() - this.startTime;
     }
 
+    // Calculate remaining delay time for current move
+    // Note: currentMoveIndex has already been incremented, so we need to look at the previous move
+    if (this.currentMoveDelayStartTime !== null) {
+      const previousMoveIndex = this.state.currentMoveIndex - 1;
+      if (previousMoveIndex >= 0) {
+        const previousMove = this.moveSequence.moves[previousMoveIndex];
+        if (previousMove) {
+          const totalDuration = this.getMoveDuration(previousMove);
+          const elapsed = Date.now() - this.currentMoveDelayStartTime;
+          this.remainingDelayTime = Math.max(0, totalDuration - elapsed);
+        }
+      }
+    }
+
     this.notifyStateChange();
   }
 
@@ -170,6 +213,8 @@ export class PlaybackController {
     this.state.currentMoveIndex = 0;
     this.pausedTime = 0;
     this.startTime = null;
+    this.remainingDelayTime = null;
+    this.currentMoveDelayStartTime = null;
     this.notifyStateChange();
   }
 
@@ -214,6 +259,8 @@ export class PlaybackController {
     if (this.state.currentMoveIndex >= this.moveSequence.moves.length) {
       // All moves have been revealed
       this.state.isPlaying = false;
+      this.remainingDelayTime = null;
+      this.currentMoveDelayStartTime = null;
       this.notifyStateChange();
       return;
     }
@@ -221,16 +268,27 @@ export class PlaybackController {
     const currentMove = this.moveSequence.moves[this.state.currentMoveIndex];
     const duration = this.getMoveDuration(currentMove);
 
+    // Notify about the duration for animation timing
+    if (this.onMoveDurationCallback) {
+      this.onMoveDurationCallback(duration);
+    }
+
+    // Track when this move's delay starts
+    this.currentMoveDelayStartTime = Date.now();
+
     // Announce the move before the delay
     if (this.onMoveAnnounceCallback) {
       this.onMoveAnnounceCallback(currentMove);
     }
 
-    // Then wait for the duration before revealing the move
-    const timeoutId = window.setTimeout(() => {
-      this.state.currentMoveIndex++;
-      this.notifyStateChange();
+    // Reveal the move immediately so animation can start
+    this.state.currentMoveIndex++;
+    this.notifyStateChange();
 
+    // Wait for the duration before scheduling the next move
+    // (animation will run during this delay)
+    const timeoutId = window.setTimeout(() => {
+      this.currentMoveDelayStartTime = null;
       if (this.state.isPlaying) {
         this.scheduleNextMove();
       }
@@ -271,5 +329,6 @@ export class PlaybackController {
     this.onStateChangeCallback = undefined;
     this.onMoveRevealedCallback = undefined;
     this.onMoveAnnounceCallback = undefined;
+    this.onMoveDurationCallback = undefined;
   }
 }
