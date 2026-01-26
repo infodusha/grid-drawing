@@ -7,7 +7,7 @@
   let { current, total }: Props = $props();
 
   const percentage = $derived(
-    total > 0 ? Math.round((current / total) * 100) : 0
+    total > 0 ? Math.round((current / total) * 100) : 0,
   );
 </script>
 

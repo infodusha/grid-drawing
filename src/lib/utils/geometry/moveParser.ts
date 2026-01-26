@@ -13,16 +13,16 @@ export function parseMove(move: string): { dx: number; dy: number } {
 
   for (const dir of directions) {
     switch (dir) {
-      case 'L':
+      case "L":
         dx -= distance;
         break;
-      case 'R':
+      case "R":
         dx += distance;
         break;
-      case 'T':
+      case "T":
         dy -= distance;
         break;
-      case 'B':
+      case "B":
         dy += distance;
         break;
     }

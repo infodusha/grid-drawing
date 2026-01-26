@@ -1,10 +1,4 @@
-export interface MoveSequenceJSON {
-  moves: string[];
-  startX: number;
-  startY: number;
-  gridWidth: number;
-  gridHeight: number;
-}
+import type { MoveSequenceJSON } from "../types";
 
 export class MoveSequence {
   public moves: string[];
@@ -28,7 +22,7 @@ export class MoveSequence {
   }
 
   static validateMove(move: string): boolean {
-    const movePattern = /^(\d+)([LRTB]+)$/;
+    const movePattern = /^(\d+)([LRTB]{1,2})$/;
     return movePattern.test(move);
   }
 

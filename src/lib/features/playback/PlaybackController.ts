@@ -1,10 +1,5 @@
-import { MoveSequence } from "../MoveSequence";
-
-export interface PlaybackState {
-  isPlaying: boolean;
-  currentMoveIndex: number;
-  speedMultiplier: number;
-}
+import { MoveSequence } from "../../core/MoveSequence";
+import type { PlaybackState } from "../../types";
 
 export class PlaybackController {
   private moveSequence: MoveSequence;

@@ -1,14 +1,11 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { p } from "sv-router/generated";
-  import GridItemCard from "../lib/components/GridItemCard.svelte";
-  import TagFilter from "../lib/components/TagFilter.svelte";
-
-  interface GridItem {
-    id: string;
-    name: string;
-    tags: string[];
-  }
+  import { onMount } from 'svelte'
+  import { p } from 'sv-router/generated'
+  import GridItemCard from '../lib/components/ui/GridItemCard.svelte'
+  import TagFilter from '../lib/components/ui/TagFilter.svelte'
+  import LoadingState from '../lib/components/ui/LoadingState.svelte'
+  import ErrorState from '../lib/components/ui/ErrorState.svelte'
+  import type { GridItem } from '../lib/types'
 
   let loading = $state(true);
   let error = $state<string | null>(null);
@@ -75,14 +72,9 @@
   <h1>Графические диктанты</h1>
 
   {#if loading}
-    <div class="loading-container">
-      <div class="spinner"></div>
-      <p>Загрузка диктантов...</p>
-    </div>
+    <LoadingState message="Загрузка диктантов..." />
   {:else if error}
-    <div class="error-container">
-      <p class="error-message">Ошибка: {error}</p>
-    </div>
+    <ErrorState message={error} />
   {:else}
     <TagFilter
       {availableTags}
@@ -148,48 +140,6 @@
     margin: 0 0 2rem 0;
     font-size: 2.5rem;
     color: var(--color-text-primary);
-  }
-
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    gap: 1rem;
-  }
-
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--color-spinner-border);
-    border-top-color: var(--color-spinner-top);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .loading-container p {
-    color: var(--color-text-muted);
-    font-size: 1.1rem;
-  }
-
-  .error-container {
-    padding: 2rem;
-    background-color: var(--color-bg-surface);
-    border-radius: 8px;
-    border: 1px solid var(--color-border-error);
-  }
-
-  .error-message {
-    color: var(--color-error);
-    margin: 0;
-    font-size: 1.1rem;
   }
 
   .actions-bar {

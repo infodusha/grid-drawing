@@ -1,94 +1,8 @@
-import { Tween } from 'svelte/motion';
-import { parseMove } from './moveParser';
-import { gridToSvg } from './coordinateConverter';
-
-export interface PathAnimationState {
-  animatedLength: Tween<number>;
-  previousMoves: string[];
-  previousPathString: string;
-  previousPathLength: number;
-  isPathInitialized: boolean;
-  isAnimatingBackwards: boolean;
-  backwardsAnimationTimeout: ReturnType<typeof setTimeout> | null;
-  customDuration: number | null;
-  isPaused: boolean;
-  pausedTarget: number | null;
-  pausedRemainingDuration: number | null;
-  animationStartTime: number | null;
-}
-
-/**
- * Creates and manages path animation state
- */
-export function createPathAnimation(): PathAnimationState {
-  const animatedLength = new Tween(0, {
-    duration: 1000,
-    easing: (t) => t // Linear easing for smooth drawing without bounce
-  });
-
-  return {
-    animatedLength,
-    previousMoves: [],
-    previousPathString: '',
-    previousPathLength: 0,
-    isPathInitialized: false,
-    isAnimatingBackwards: false,
-    backwardsAnimationTimeout: null,
-    customDuration: null,
-    isPaused: false,
-    pausedTarget: null,
-    pausedRemainingDuration: null,
-    animationStartTime: null,
-  };
-}
-
-/**
- * Calculates the length of the common prefix between two move arrays
- */
-function calculateCommonPathLength(
-  moves: string[],
-  commonLength: number,
-  startX: number,
-  startY: number,
-  cellSize: number
-): number {
-  if (commonLength === 0) return 0;
-
-  let x = startX;
-  let y = startY;
-  const svgPoints: Array<{ x: number; y: number }> = [gridToSvg(x, y, cellSize)];
-
-  for (let i = 0; i < commonLength; i++) {
-    const { dx, dy } = parseMove(moves[i]);
-    x += dx;
-    y += dy;
-    svgPoints.push(gridToSvg(x, y, cellSize));
-  }
-
-  let commonPathLength = 0;
-  for (let i = 1; i < svgPoints.length; i++) {
-    const dx = svgPoints[i].x - svgPoints[i - 1].x;
-    const dy = svgPoints[i].y - svgPoints[i - 1].y;
-    commonPathLength += Math.sqrt(dx * dx + dy * dy);
-  }
-
-  return commonPathLength;
-}
-
-/**
- * Finds the common prefix length between two move arrays
- */
-function findCommonPrefixLength(previousMoves: string[], currentMoves: string[]): number {
-  let commonLength = 0;
-  for (let i = 0; i < Math.min(previousMoves.length, currentMoves.length); i++) {
-    if (previousMoves[i] === currentMoves[i]) {
-      commonLength++;
-    } else {
-      break;
-    }
-  }
-  return commonLength;
-}
+import type { PathAnimationState } from "../../../types";
+import {
+  calculateCommonPathLength,
+  findCommonPrefixLength,
+} from "./calculator";
 
 /**
  * Pauses the current animation at its current position
@@ -97,9 +11,13 @@ export function pausePathAnimation(state: PathAnimationState): void {
   if (state.isPaused) return;
 
   const currentValue = state.animatedLength.current;
-  
+
   // Calculate remaining duration if we have animation start time and target
-  if (state.animationStartTime !== null && state.pausedTarget !== null && state.pausedRemainingDuration !== null) {
+  if (
+    state.animationStartTime !== null &&
+    state.pausedTarget !== null &&
+    state.pausedRemainingDuration !== null
+  ) {
     const elapsed = Date.now() - state.animationStartTime;
     const remaining = Math.max(0, state.pausedRemainingDuration - elapsed);
     state.pausedRemainingDuration = remaining;
@@ -117,15 +35,19 @@ export function resumePathAnimation(state: PathAnimationState): void {
   if (!state.isPaused) return;
 
   const currentValue = state.animatedLength.current;
-  
+
   // If we have a target and remaining duration, resume the animation
-  if (state.pausedTarget !== null && state.pausedRemainingDuration !== null && state.pausedRemainingDuration > 0) {
+  if (
+    state.pausedTarget !== null &&
+    state.pausedRemainingDuration !== null &&
+    state.pausedRemainingDuration > 0
+  ) {
     const distanceToTarget = Math.abs(state.pausedTarget - currentValue);
     if (distanceToTarget > 0.1) {
       // Resume with remaining duration
       state.animatedLength.set(state.pausedTarget, {
         duration: state.pausedRemainingDuration,
-        easing: (t) => t
+        easing: (t) => t,
       });
       state.animationStartTime = Date.now();
     } else {
@@ -144,7 +66,7 @@ export function resumePathAnimation(state: PathAnimationState): void {
     state.pausedRemainingDuration = null;
     state.animationStartTime = null;
   }
-  
+
   state.isPaused = false;
 }
 
@@ -160,7 +82,7 @@ export function updatePathAnimation(
   startY: number,
   cellSize: number,
   customDuration?: number | null,
-  isPlaying?: boolean
+  isPlaying?: boolean,
 ): void {
   // Store custom duration if provided
   if (customDuration !== undefined && customDuration !== null) {
@@ -178,7 +100,8 @@ export function updatePathAnimation(
   }
 
   // Detect if moves array changed
-  const movesChanged = JSON.stringify(currentMoves) !== JSON.stringify(state.previousMoves);
+  const movesChanged =
+    JSON.stringify(currentMoves) !== JSON.stringify(state.previousMoves);
 
   // Handle pause/resume based on isPlaying state
   if (isPlaying !== undefined) {
@@ -203,10 +126,18 @@ export function updatePathAnimation(
     const currentAnimated = state.animatedLength.current;
     if (currentPathLength > currentAnimated) {
       state.pausedTarget = currentPathLength;
-      state.pausedRemainingDuration = state.customDuration ?? Math.max(200, Math.min(500, (currentPathLength - currentAnimated) * 1.5));
+      state.pausedRemainingDuration =
+        state.customDuration ??
+        Math.max(
+          200,
+          Math.min(500, (currentPathLength - currentAnimated) * 1.5),
+        );
     } else if (currentPathLength < currentAnimated) {
       state.pausedTarget = currentPathLength;
-      state.pausedRemainingDuration = Math.max(200, Math.min(500, (currentAnimated - currentPathLength) * 1.5));
+      state.pausedRemainingDuration = Math.max(
+        200,
+        Math.min(500, (currentAnimated - currentPathLength) * 1.5),
+      );
     }
     // Update previous moves so we don't process this change again
     state.previousMoves = [...currentMoves];
@@ -223,13 +154,16 @@ export function updatePathAnimation(
   const currentAnimated = state.animatedLength.current;
 
   // Calculate the length of the common prefix (unchanged moves)
-  const commonLength = findCommonPrefixLength(state.previousMoves, currentMoves);
+  const commonLength = findCommonPrefixLength(
+    state.previousMoves,
+    currentMoves,
+  );
   const commonPathLength = calculateCommonPathLength(
     currentMoves,
     commonLength,
     startX,
     startY,
-    cellSize
+    cellSize,
   );
 
   // Calculate the remaining length to animate
@@ -237,7 +171,8 @@ export function updatePathAnimation(
   let animationDuration: number;
 
   // Use custom duration if available, otherwise calculate based on length
-  const useCustomDuration = state.customDuration !== null && currentPathLength > currentAnimated;
+  const useCustomDuration =
+    state.customDuration !== null && currentPathLength > currentAnimated;
 
   // If path got shorter (moves removed), animate backwards smoothly
   if (currentPathLength < currentAnimated) {
@@ -259,13 +194,13 @@ export function updatePathAnimation(
     // Animate backwards (reverse) - smooth linear animation going backwards
     state.pausedTarget = currentPathLength;
     state.pausedRemainingDuration = animationDuration;
-    
+
     // Only start animation if not paused
     if (!state.isPaused) {
       state.animationStartTime = Date.now();
       state.animatedLength.set(currentPathLength, {
         duration: animationDuration,
-        easing: (t) => t // Linear easing - smooth reverse drawing
+        easing: (t) => t, // Linear easing - smooth reverse drawing
       });
     }
 
@@ -284,10 +219,10 @@ export function updatePathAnimation(
     // Path got longer (moves added), continue smoothly from current position
     remainingLength = currentPathLength - currentAnimated;
     // Use custom duration if available, otherwise calculate based on length
-    animationDuration = useCustomDuration 
+    animationDuration = useCustomDuration
       ? state.customDuration!
       : Math.max(200, Math.min(500, remainingLength * 1.5));
-    
+
     // Clear custom duration after using it
     if (useCustomDuration) {
       state.customDuration = null;
@@ -296,13 +231,13 @@ export function updatePathAnimation(
     // Continue the animation forward
     state.pausedTarget = currentPathLength;
     state.pausedRemainingDuration = animationDuration;
-    
+
     // Only start animation if not paused
     if (!state.isPaused) {
       state.animationStartTime = Date.now();
       state.animatedLength.set(currentPathLength, {
         duration: animationDuration,
-        easing: (t) => t // Linear easing for smooth drawing without bounce
+        easing: (t) => t, // Linear easing for smooth drawing without bounce
       });
     }
   } else {
@@ -312,7 +247,7 @@ export function updatePathAnimation(
     animationDuration = useCustomDuration
       ? state.customDuration!
       : Math.max(200, Math.min(500, remainingLength * 1.5));
-    
+
     // Clear custom duration after using it
     if (useCustomDuration) {
       state.customDuration = null;
@@ -324,13 +259,13 @@ export function updatePathAnimation(
     }
     state.pausedTarget = currentPathLength;
     state.pausedRemainingDuration = animationDuration;
-    
+
     // Only start animation if not paused
     if (!state.isPaused) {
       state.animationStartTime = Date.now();
       state.animatedLength.set(currentPathLength, {
         duration: animationDuration,
-        easing: (t) => t // Linear easing
+        easing: (t) => t, // Linear easing
       });
     }
   }
@@ -343,14 +278,5 @@ export function updatePathAnimation(
   if (!state.isAnimatingBackwards) {
     state.previousPathString = currentPathString;
     state.previousPathLength = currentPathLength;
-  }
-}
-
-/**
- * Cleans up path animation state
- */
-export function cleanupPathAnimation(state: PathAnimationState): void {
-  if (state.backwardsAnimationTimeout) {
-    clearTimeout(state.backwardsAnimationTimeout);
   }
 }

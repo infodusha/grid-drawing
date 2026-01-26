@@ -1,9 +1,4 @@
-export interface StartDotAnimationState {
-  dotAnimationTimeout: ReturnType<typeof setTimeout> | null;
-  previousX: number;
-  previousY: number;
-  isInitialized: boolean;
-}
+import type { StartDotAnimationState } from "../../types";
 
 /**
  * Creates start dot animation state
@@ -25,7 +20,7 @@ export function updateStartDotAnimation(
   state: StartDotAnimationState,
   x: number,
   y: number,
-  setShouldAnimate: (value: boolean) => void
+  setShouldAnimate: (value: boolean) => void,
 ): void {
   // Skip animation on initial mount
   if (!state.isInitialized) {

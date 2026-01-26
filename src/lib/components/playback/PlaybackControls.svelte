@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { PlaybackController, type PlaybackState } from "../utils/playback";
-  import { Pause, Play } from '@lucide/svelte'
+  import { PlaybackController } from "../../features/playback";
+  import { Pause, Play } from "@lucide/svelte";
+  import type { PlaybackState } from "../../types";
 
   interface Props {
     playbackController: PlaybackController | null;

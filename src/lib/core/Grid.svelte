@@ -7,21 +7,21 @@
     buildPathString,
     calculatePathLength,
     getVisiblePoints,
-  } from "./utils/pathCalculator";
-  import { gridToSvg } from "./utils/coordinateConverter";
+  } from "../utils/geometry/pathCalculator";
+  import { gridToSvg } from "../utils/geometry/coordinateConverter";
   import {
     createPathAnimation,
     updatePathAnimation,
     cleanupPathAnimation,
-  } from "./utils/pathAnimation";
+  } from "../utils/animation/pathAnimation";
   import {
     createStartDotAnimation,
     updateStartDotAnimation,
     cleanupStartDotAnimation,
-  } from "./utils/startDotAnimation";
-  import GridBackground from "./components/GridBackground.svelte";
-  import PathLine from "./components/PathLine.svelte";
-  import StartDot from "./components/StartDot.svelte";
+  } from "../utils/animation/startDotAnimation";
+  import GridBackground from "../components/grid/GridBackground.svelte";
+  import PathLine from "../components/grid/PathLine.svelte";
+  import StartDot from "../components/grid/StartDot.svelte";
 
   interface Props {
     moveSequence?: MoveSequence;

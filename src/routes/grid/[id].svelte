@@ -1,24 +1,18 @@
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte";
-  import { searchParams } from "sv-router";
-  import { route } from "sv-router/generated";
-  import { MoveSequence } from "../../lib/MoveSequence";
-  import {
-    PlaybackController,
-    type PlaybackState,
-  } from "../../lib/utils/playback";
-  import { SpeechAnnouncer } from "../../lib/utils/speechAnnouncer";
-  import Grid from "../../lib/Grid.svelte";
-  import PlaybackControls from "../../lib/components/PlaybackControls.svelte";
-  import MaskToggle from "../../lib/components/MaskToggle.svelte";
-  import MoveLog from "../../lib/components/MoveLog.svelte";
-  import ProgressBar from "../../lib/components/ProgressBar.svelte";
-
-  interface GridItem {
-    id: string;
-    name: string;
-    tags: string[];
-  }
+  import { onMount, onDestroy } from 'svelte'
+  import { searchParams } from 'sv-router'
+  import { route } from 'sv-router/generated'
+  import { MoveSequence } from '../../lib/core/MoveSequence'
+  import { PlaybackController } from '../../lib/features/playback'
+  import { SpeechAnnouncer } from '../../lib/features/speech'
+  import Grid from '../../lib/core/Grid.svelte'
+  import PlaybackControls from '../../lib/components/playback/PlaybackControls.svelte'
+  import MaskToggle from '../../lib/components/ui/MaskToggle.svelte'
+  import MoveLog from '../../lib/components/playback/MoveLog.svelte'
+  import ProgressBar from '../../lib/components/playback/ProgressBar.svelte'
+  import LoadingState from '../../lib/components/ui/LoadingState.svelte'
+  import ErrorState from '../../lib/components/ui/ErrorState.svelte'
+  import type { GridItem, PlaybackState } from '../../lib/types'
 
   const { id } = route.getParams("/grid/:id");
 
@@ -214,14 +208,9 @@
 
 <main class="grid-playback-page">
   {#if loading}
-    <div class="loading-container">
-      <div class="spinner"></div>
-      <p>Загрузка диктанта...</p>
-    </div>
+    <LoadingState message="Загрузка диктанта..." />
   {:else if error}
-    <div class="error-container">
-      <p class="error-message">Ошибка: {error}</p>
-    </div>
+    <ErrorState message={error} />
   {:else if moveSequence}
     <div class="header-section">
       <h1 class="grid-name" class:masked={isMasked}>
@@ -290,48 +279,6 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-  }
-
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    gap: 1rem;
-  }
-
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--color-spinner-border);
-    border-top-color: var(--color-spinner-top);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .loading-container p {
-    color: var(--color-text-muted);
-    font-size: 1.1rem;
-  }
-
-  .error-container {
-    padding: 2rem;
-    background-color: var(--color-bg-surface);
-    border-radius: 8px;
-    border: 1px solid var(--color-border-error);
-  }
-
-  .error-message {
-    color: var(--color-error);
-    margin: 0;
-    font-size: 1.1rem;
   }
 
   .header-section {

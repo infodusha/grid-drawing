@@ -19,5 +19,4 @@
   .mask-toggle {
     font-size: 1em;
   }
-
 </style>
