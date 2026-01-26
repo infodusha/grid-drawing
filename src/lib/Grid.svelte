@@ -1,9 +1,12 @@
 <script lang="ts">
+  import rough from "roughjs";
+  import type { RoughSVG } from "roughjs/bin/svg";
   import { MoveSequence } from "./MoveSequence";
   import {
     calculatePathCoordinates,
     buildPathString,
     calculatePathLength,
+    getVisiblePoints,
   } from "./utils/pathCalculator";
   import { gridToSvg } from "./utils/coordinateConverter";
   import {
@@ -19,6 +22,7 @@
   import GridBackground from "./components/GridBackground.svelte";
   import PathLine from "./components/PathLine.svelte";
   import StartDot from "./components/StartDot.svelte";
+
   interface Props {
     moveSequence?: MoveSequence;
     animationDuration?: number | null;
@@ -38,9 +42,18 @@
   const effectiveStartY = $derived(moveSequence?.startY ?? 0);
   const effectiveMoves = $derived(moveSequence?.moves ?? []);
 
-  let containerElement: SVGSVGElement;
+  let containerElement: SVGSVGElement | undefined = $state();
   let containerWidth = $state(800);
   let containerHeight = $state(600);
+
+  // Initialize Rough.js SVG instance
+  let roughSvg: RoughSVG | undefined = $state();
+
+  $effect(() => {
+    if (containerElement) {
+      roughSvg = rough.svg(containerElement);
+    }
+  });
 
   // Calculate cell size based on container dimensions
   const cellSize = $derived(
@@ -59,7 +72,7 @@
     calculatePathCoordinates(effectiveMoves, effectiveStartX, effectiveStartY),
   );
 
-  // Build SVG path string
+  // Build SVG path string (kept for animation state tracking)
   const pathString = $derived(buildPathString(pathCoordinates, cellSize));
 
   // Calculate path length for animation
@@ -70,6 +83,11 @@
 
   // Track animated length reactively
   const animatedLength = $derived(pathAnimationState.animatedLength.current);
+
+  // Get visible points for Rough.js based on animation progress
+  const visiblePoints = $derived(
+    getVisiblePoints(pathCoordinates, cellSize, animatedLength),
+  );
 
   // Animate path when moves change, animation duration changes, or playing state changes
   $effect(() => {
@@ -143,22 +161,25 @@
     height="100%"
     preserveAspectRatio="xMidYMid meet"
   >
-    <GridBackground {svgWidth} {svgHeight} {cellSize} />
+    {#if roughSvg}
+      <GridBackground
+        {roughSvg}
+        {svgWidth}
+        {svgHeight}
+        {cellSize}
+        gridWidth={effectiveGridWidth}
+        gridHeight={effectiveGridHeight}
+      />
 
-    <PathLine
-      {pathString}
-      {pathLength}
-      {animatedLength}
-      previousPathString={pathAnimationState.previousPathString}
-      previousPathLength={pathAnimationState.previousPathLength}
-      isAnimatingBackwards={pathAnimationState.isAnimatingBackwards}
-    />
+      <PathLine {roughSvg} points={visiblePoints} />
 
-    <StartDot
-      x={startPoint.x}
-      y={startPoint.y}
-      shouldAnimate={shouldAnimateDot}
-    />
+      <StartDot
+        {roughSvg}
+        x={startPoint.x}
+        y={startPoint.y}
+        shouldAnimate={shouldAnimateDot}
+      />
+    {/if}
   </svg>
 </div>
 
