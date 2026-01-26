@@ -14,9 +14,10 @@ export class PlaybackController {
   private pausedTime: number = 0;
   private onStateChangeCallback?: (state: PlaybackState) => void;
   private onMoveRevealedCallback?: (revealedMoves: string[]) => void;
+  private onMoveAnnounceCallback?: (move: string) => void;
 
   // Base duration per unit of move (in milliseconds)
-  private readonly BASE_DURATION_PER_UNIT = 500; // 0.5 seconds
+  private readonly BASE_DURATION_PER_UNIT = 750;
 
   constructor(moveSequence: MoveSequence) {
     this.moveSequence = moveSequence;
@@ -29,10 +30,17 @@ export class PlaybackController {
 
   /**
    * Extract the numeric value from a move string (e.g., "5R" -> 5)
+   * Adds an extra unit if the move has 2 directions (e.g., "2RB" -> 3)
    */
   private getMoveValue(move: string): number {
-    const match = move.match(/^(\d+)/);
-    return match ? parseInt(match[1], 10) : 1;
+    const match = move.match(/^(\d+)([LRTB]+)$/);
+    if (!match) return 1;
+
+    const value = parseInt(match[1], 10);
+    const directions = match[2];
+
+    // Add an extra unit if move has 2 directions
+    return directions.length === 2 ? value + 1 : value;
   }
 
   /**
@@ -40,7 +48,9 @@ export class PlaybackController {
    */
   private getMoveDuration(move: string): number {
     const moveValue = this.getMoveValue(move);
-    return (this.BASE_DURATION_PER_UNIT * moveValue) / this.state.speedMultiplier;
+    return (
+      (this.BASE_DURATION_PER_UNIT * moveValue) / this.state.speedMultiplier
+    );
   }
 
   /**
@@ -69,6 +79,13 @@ export class PlaybackController {
    */
   onMoveRevealed(callback: (revealedMoves: string[]) => void) {
     this.onMoveRevealedCallback = callback;
+  }
+
+  /**
+   * Set callback for when a move should be announced (before the delay)
+   */
+  onMoveAnnounce(callback: (move: string) => void) {
+    this.onMoveAnnounceCallback = callback;
   }
 
   /**
@@ -136,11 +153,11 @@ export class PlaybackController {
 
     this.clearTimeouts();
     this.state.isPlaying = false;
-    
+
     if (this.startTime !== null) {
       this.pausedTime = Date.now() - this.startTime;
     }
-    
+
     this.notifyStateChange();
   }
 
@@ -165,7 +182,7 @@ export class PlaybackController {
     }
 
     const wasPlaying = this.state.isPlaying;
-    
+
     if (wasPlaying) {
       this.pause();
     }
@@ -204,6 +221,12 @@ export class PlaybackController {
     const currentMove = this.moveSequence.moves[this.state.currentMoveIndex];
     const duration = this.getMoveDuration(currentMove);
 
+    // Announce the move before the delay
+    if (this.onMoveAnnounceCallback) {
+      this.onMoveAnnounceCallback(currentMove);
+    }
+
+    // Then wait for the duration before revealing the move
     const timeoutId = window.setTimeout(() => {
       this.state.currentMoveIndex++;
       this.notifyStateChange();
@@ -221,13 +244,13 @@ export class PlaybackController {
    */
   updateMoveSequence(moveSequence: MoveSequence) {
     const wasPlaying = this.state.isPlaying;
-    
+
     if (wasPlaying) {
       this.pause();
     }
 
     this.moveSequence = moveSequence;
-    
+
     // Reset if we've gone past the new sequence length
     if (this.state.currentMoveIndex > moveSequence.moves.length) {
       this.state.currentMoveIndex = moveSequence.moves.length;
@@ -247,5 +270,6 @@ export class PlaybackController {
     this.clearTimeouts();
     this.onStateChangeCallback = undefined;
     this.onMoveRevealedCallback = undefined;
+    this.onMoveAnnounceCallback = undefined;
   }
 }

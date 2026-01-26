@@ -7,6 +7,7 @@
     PlaybackController,
     type PlaybackState,
   } from "../../lib/utils/playback";
+  import { SpeechAnnouncer } from "../../lib/utils/speechAnnouncer";
   import Grid from "../../lib/Grid.svelte";
   import PlaybackControls from "../../lib/components/PlaybackControls.svelte";
   import MaskToggle from "../../lib/components/MaskToggle.svelte";
@@ -35,6 +36,7 @@
     speedMultiplier: 1.0,
   });
   let revealedMoves = $state<string[]>([]);
+  let speechAnnouncer = $state<SpeechAnnouncer | null>(null);
 
   // Create partial MoveSequence with only revealed moves for Grid component
   const partialMoveSequence = $derived.by(() => {
@@ -67,6 +69,25 @@
         const item = metadata.find((item) => item.id === id);
         if (item) {
           gridName = item.name;
+        }
+      }
+
+      // Initialize speech announcer (wait for voices to be available)
+      if (SpeechAnnouncer.isAvailable()) {
+        const initSpeechAnnouncer = () => {
+          const voices = window.speechSynthesis.getVoices();
+          const voice = voices.find(({ lang }) => lang === "ru-RU");
+          if (voice) {
+            speechAnnouncer = new SpeechAnnouncer({ voice });
+          }
+        };
+
+        // Check if voices are already loaded
+        if (window.speechSynthesis.getVoices().length > 0) {
+          initSpeechAnnouncer();
+        } else {
+          // Wait for voices to be loaded
+          window.speechSynthesis.onvoiceschanged = initSpeechAnnouncer;
         }
       }
 
@@ -105,6 +126,9 @@
     if (playbackController) {
       playbackController.destroy();
     }
+    if (speechAnnouncer) {
+      speechAnnouncer.destroy();
+    }
   });
 
   // Keyboard shortcut: spacebar to play/pause
@@ -134,6 +158,19 @@
       };
     }
   });
+
+  // Set up move announcement callback (called before the delay)
+  // Update it whenever speechAnnouncer or playbackController changes
+  $effect(() => {
+    if (playbackController) {
+      playbackController.onMoveAnnounce((move) => {
+        if (speechAnnouncer) {
+          speechAnnouncer.announceMove(move);
+        }
+      });
+    }
+  });
+
 
   function handlePlay() {
     if (playbackController) {
