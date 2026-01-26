@@ -12,7 +12,7 @@
   cx={x}
   cy={y}
   r="6"
-  fill="#ff3e00"
+  fill="var(--color-start-dot)"
   class="start-dot"
   class:animate={shouldAnimate}
 />

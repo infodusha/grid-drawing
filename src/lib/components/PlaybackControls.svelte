@@ -96,9 +96,9 @@
     align-items: center;
     gap: 1.5rem;
     padding: 1rem;
-    background-color: #1a1a1a;
+    background-color: var(--color-bg-surface);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
   }
 
   .play-pause-button {
@@ -129,7 +129,7 @@
 
   .speed-control label {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     white-space: nowrap;
   }
 
@@ -145,25 +145,10 @@
 
   .speed-value {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.87);
+    color: var(--color-text-primary);
     min-width: 50px;
     text-align: right;
     font-variant-numeric: tabular-nums;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .playback-controls {
-      background-color: #f9f9f9;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .speed-control label {
-      color: rgba(33, 53, 71, 0.7);
-    }
-
-    .speed-value {
-      color: #213547;
-    }
   }
 
   @media (max-width: 768px) {

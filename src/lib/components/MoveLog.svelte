@@ -63,9 +63,9 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 1rem;
-    background-color: #1a1a1a;
+    background-color: var(--color-bg-surface);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
   }
 
   .move-log {
@@ -85,20 +85,20 @@
   }
 
   .move-item.past {
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--color-text-disabled);
     font-size: 0.9em;
   }
 
   .move-item.current {
-    color: #646cff;
+    color: var(--color-primary);
     font-weight: 600;
     font-size: 1.1em;
-    background-color: rgba(100, 108, 255, 0.1);
+    background-color: var(--color-accent-bg);
     transform: scale(1.02);
   }
 
   .move-item.future {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--color-text-muted);
     font-size: 0.95em;
   }
 
@@ -118,48 +118,16 @@
   }
 
   .move-log-container::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-scrollbar-track);
     border-radius: 4px;
   }
 
   .move-log-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--color-scrollbar-thumb);
     border-radius: 4px;
   }
 
   .move-log-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-
-  @media (prefers-color-scheme: light) {
-    .move-log-container {
-      background-color: #f9f9f9;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .move-item.past {
-      color: rgba(33, 53, 71, 0.4);
-    }
-
-    .move-item.current {
-      color: #646cff;
-      background-color: rgba(100, 108, 255, 0.15);
-    }
-
-    .move-item.future {
-      color: rgba(33, 53, 71, 0.5);
-    }
-
-    .move-log-container::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .move-log-container::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .move-log-container::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 0, 0, 0.3);
-    }
+    background: var(--color-scrollbar-thumb-hover);
   }
 </style>

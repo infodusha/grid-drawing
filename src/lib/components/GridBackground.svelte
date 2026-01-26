@@ -18,7 +18,7 @@
     <path
       d="M {cellSize} 0 L 0 0 0 {cellSize}"
       fill="none"
-      stroke="rgba(255, 255, 255, 0.2)"
+      stroke="var(--color-grid-line)"
       stroke-width="1"
     />
   </pattern>
@@ -34,6 +34,6 @@
   width={svgWidth}
   height={svgHeight}
   fill="none"
-  stroke="rgba(255, 255, 255, 0.4)"
+  stroke="var(--color-grid-border)"
   stroke-width="2"
 />

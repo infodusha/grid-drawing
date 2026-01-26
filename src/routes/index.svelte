@@ -147,7 +147,7 @@
     text-align: center;
     margin: 0 0 2rem 0;
     font-size: 2.5rem;
-    color: rgba(255, 255, 255, 0.87);
+    color: var(--color-text-primary);
   }
 
   .loading-container {
@@ -162,8 +162,8 @@
   .spinner {
     width: 48px;
     height: 48px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top-color: #646cff;
+    border: 4px solid var(--color-spinner-border);
+    border-top-color: var(--color-spinner-top);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -175,19 +175,19 @@
   }
 
   .loading-container p {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     font-size: 1.1rem;
   }
 
   .error-container {
     padding: 2rem;
-    background-color: #1a1a1a;
+    background-color: var(--color-bg-surface);
     border-radius: 8px;
-    border: 1px solid rgba(255, 0, 0, 0.3);
+    border: 1px solid var(--color-border-error);
   }
 
   .error-message {
-    color: rgba(255, 100, 100, 0.9);
+    color: var(--color-error);
     margin: 0;
     font-size: 1.1rem;
   }
@@ -210,20 +210,20 @@
   }
 
   .results-count {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     font-size: 0.9rem;
   }
 
   .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    background-color: #1a1a1a;
+    background-color: var(--color-bg-surface);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
   }
 
   .empty-state p {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     margin: 0 0 1rem 0;
     font-size: 1.1rem;
   }
@@ -236,39 +236,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
-  }
-
-  @media (prefers-color-scheme: light) {
-    h1 {
-      color: #213547;
-    }
-
-    .loading-container p {
-      color: rgba(33, 53, 71, 0.7);
-    }
-
-    .error-container {
-      background-color: #f9f9f9;
-      border-color: rgba(255, 0, 0, 0.2);
-    }
-
-    .error-message {
-      color: rgba(200, 50, 50, 0.9);
-    }
-
-    .results-count {
-      color: rgba(33, 53, 71, 0.7);
-    }
-
-    .empty-state {
-      background-color: #f9f9f9;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .empty-state p {
-      color: rgba(33, 53, 71, 0.7);
-    }
-
   }
 
   @media (max-width: 768px) {

@@ -38,11 +38,11 @@
 
   .grid-card-link:hover .grid-card {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(100, 108, 255, 0.2);
+    box-shadow: 0 4px 12px var(--color-shadow-primary);
   }
 
   .grid-card-link:focus-visible {
-    outline: 2px solid #646cff;
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
     border-radius: 8px;
   }
@@ -51,7 +51,7 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.87);
+    color: var(--color-text-primary);
   }
 
   .tags-container {
@@ -62,26 +62,10 @@
 
   .tag {
     padding: 0.25rem 0.75rem;
-    background-color: #242424;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--color-bg-tag);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  @media (prefers-color-scheme: light) {
-    .grid-card-link:hover .grid-card {
-      box-shadow: 0 4px 12px rgba(100, 108, 255, 0.15);
-    }
-
-    .grid-name {
-      color: #213547;
-    }
-
-    .tag {
-      background-color: #ffffff;
-      border-color: rgba(0, 0, 0, 0.1);
-      color: rgba(33, 53, 71, 0.7);
-    }
+    color: var(--color-text-secondary);
   }
 </style>

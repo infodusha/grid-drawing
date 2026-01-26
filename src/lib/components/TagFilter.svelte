@@ -39,9 +39,9 @@
 <style>
   .filter-container {
     padding: 1.5rem;
-    background-color: #1a1a1a;
+    background-color: var(--color-bg-surface);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
     margin-bottom: 2rem;
   }
 
@@ -56,7 +56,7 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.87);
+    color: var(--color-text-primary);
   }
 
   .reset-button {
@@ -84,16 +84,5 @@
   .tag-button wired-checkbox {
     cursor: pointer;
     flex-shrink: 0;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .filter-container {
-      background-color: #f9f9f9;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .filter-title {
-      color: #213547;
-    }
   }
 </style>

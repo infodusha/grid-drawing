@@ -26,7 +26,7 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background-color: #242424;
+    background-color: var(--color-bg);
   }
 
   .error-content {
@@ -39,37 +39,23 @@
     font-weight: 900;
     line-height: 1;
     margin-bottom: 1rem;
-    color: #646cff;
+    color: var(--color-primary);
   }
 
   h1 {
     font-size: clamp(1.5rem, 4vw, 2rem);
     margin: 1rem 0;
-    color: rgba(255, 255, 255, 0.87);
+    color: var(--color-text-primary);
   }
 
   .error-message {
     font-size: clamp(1rem, 2vw, 1.1rem);
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     margin-bottom: 2rem;
     line-height: 1.6;
   }
 
   .home-button {
     font-size: 1rem;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .not-found-container {
-      background-color: #ffffff;
-    }
-
-    h1 {
-      color: #213547;
-    }
-
-    .error-message {
-      color: rgba(33, 53, 71, 0.7);
-    }
   }
 </style>

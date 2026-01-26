@@ -2,7 +2,7 @@
 
 ## Role
 
-You are in charge of SSR Svelte 5 app.
+You are in charge of SSR Svelte 5 app. You are free to use any modern CSS and JS features.
 
 ## Code style
 

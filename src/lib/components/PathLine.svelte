@@ -33,7 +33,7 @@
   <path
     d={displayPath}
     fill="none"
-    stroke="#646cff"
+    stroke="var(--color-path)"
     stroke-width="3"
     stroke-linecap="round"
     stroke-linejoin="round"

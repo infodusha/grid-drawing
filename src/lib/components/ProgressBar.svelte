@@ -39,31 +39,21 @@
   .progress-bar {
     width: 100%;
     height: 8px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--color-progress-bg);
     border-radius: 4px;
     overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background-color: #646cff;
+    background-color: var(--color-progress-fill);
     transition: width 0.3s ease;
     border-radius: 4px;
   }
 
   .progress-text {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
     text-align: center;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .progress-bar {
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .progress-text {
-      color: rgba(33, 53, 71, 0.7);
-    }
   }
 </style>

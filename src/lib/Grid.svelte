@@ -170,7 +170,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1a1a1a;
+    background-color: var(--color-bg-surface);
     border-radius: 8px;
     padding: 1rem;
   }
