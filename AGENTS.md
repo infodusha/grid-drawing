@@ -13,8 +13,9 @@ You are in charge of SSR Svelte 5 app. You are free to use any modern CSS and JS
 ## Stack
 
 - Svelte 5 with runes
-- Wired-elements
-- File-based sv-router
+- Wired-elements for UI components - custom elements
+- File-based 'sv-router'
+- Icons are from '@lucide/svelte'
 
 ## Styling
 

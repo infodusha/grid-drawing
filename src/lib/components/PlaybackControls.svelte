@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PlaybackController, type PlaybackState } from "../utils/playback";
+  import { Pause, Play } from '@lucide/svelte'
 
   interface Props {
     playbackController: PlaybackController | null;
@@ -43,34 +44,9 @@
     aria-label={isPlaying ? "Пауза" : "Воспроизведение"}
   >
     {#if isPlaying}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <rect x="6" y="4" width="4" height="16"></rect>
-        <rect x="14" y="4" width="4" height="16"></rect>
-      </svg>
+      <Pause size={24} />
     {:else}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-      </svg>
+      <Play size={24} />
     {/if}
   </wired-button>
 
@@ -116,7 +92,7 @@
     cursor: not-allowed;
   }
 
-  .play-pause-button svg {
+  .play-pause-button :global(svg) {
     pointer-events: none;
   }
 

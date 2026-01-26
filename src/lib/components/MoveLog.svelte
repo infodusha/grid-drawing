@@ -1,4 +1,6 @@
 <script lang="ts">
+  import MoveDisplay from './MoveDisplay.svelte'
+
   interface Props {
     allMoves: string[];
     currentIndex: number;
@@ -8,42 +10,64 @@
 
   let logContainer: HTMLDivElement;
 
+  // Calculate the actual current index (currentIndex is one ahead)
+  const actualCurrentIndex = $derived(
+    currentIndex > 0 ? currentIndex - 1 : -1
+  );
+
   // Scroll to current move when it changes
   $effect(() => {
     if (!logContainer) return;
     
-    // Find the current move element using querySelector
-    const currentMoveElement = logContainer.querySelector(
-      `.move-item.current`
-    ) as HTMLDivElement | null;
+    // Track actualCurrentIndex changes - accessing it makes the effect reactive
+    const index = actualCurrentIndex;
+    if (index < 0) return; // No current move yet
     
-    if (currentMoveElement) {
-      const scrollTop = logContainer.scrollTop;
-      const elementTop = currentMoveElement.offsetTop;
-      const elementHeight = currentMoveElement.offsetHeight;
-      const containerHeight = logContainer.clientHeight;
-
-      // Check if element is outside visible area
-      if (
-        elementTop < scrollTop ||
-        elementTop + elementHeight > scrollTop + containerHeight
-      ) {
-        // Center the current move in the viewport
+    // Use setTimeout to ensure DOM has updated with new classes
+    setTimeout(() => {
+      // Find the current move element using querySelector
+      const currentMoveElement = logContainer.querySelector(
+        `.move-item.current`
+      ) as HTMLDivElement | null;
+      
+      if (currentMoveElement) {
+        // Get positions relative to the scroll container
+        const containerRect = logContainer.getBoundingClientRect();
+        const elementRect = currentMoveElement.getBoundingClientRect();
+        
+        // Calculate element's position relative to container's scrollable content
+        // elementRect.top is relative to viewport, containerRect.top is container's top in viewport
+        // Adding scrollTop gives us the absolute position in scrollable content
+        const elementTopInScrollContent = 
+          elementRect.top - containerRect.top + logContainer.scrollTop;
+        
+        const elementHeight = elementRect.height;
+        const containerHeight = logContainer.clientHeight;
+        const scrollHeight = logContainer.scrollHeight;
+        
+        // Calculate scroll position to center the element
+        const targetScrollTop = elementTopInScrollContent - containerHeight / 2 + elementHeight / 2;
+        
+        // Clamp to valid scroll range
+        const maxScrollTop = Math.max(0, scrollHeight - containerHeight);
+        const clampedScrollTop = Math.max(0, Math.min(targetScrollTop, maxScrollTop));
+        
+        // Scroll to center the element
         logContainer.scrollTo({
-          top: elementTop - containerHeight / 2 + elementHeight / 2,
-          behavior: "smooth",
+          top: clampedScrollTop,
+          behavior: 'smooth',
         });
       }
-    }
+    }, 0);
   });
 </script>
 
 <div class="move-log-container" bind:this={logContainer}>
   <div class="move-log">
     {#each allMoves as move, index (index)}
-      {@const isPast = index < currentIndex}
-      {@const isCurrent = index === currentIndex}
-      {@const isFuture = index > currentIndex}
+      {@const isPast = index < actualCurrentIndex}
+      {@const isCurrent = index === actualCurrentIndex}
+      {@const isFuture = index > actualCurrentIndex}
       <div
         class="move-item"
         class:past={isPast}
@@ -51,7 +75,7 @@
         class:future={isFuture}
       >
         <span class="move-number">{index + 1}.</span>
-        <span class="move-text">{move}</span>
+        <MoveDisplay {move} />
       </div>
     {/each}
   </div>
@@ -106,10 +130,6 @@
     min-width: 2.5rem;
     text-align: right;
     font-variant-numeric: tabular-nums;
-  }
-
-  .move-text {
-    flex: 1;
   }
 
   /* Scrollbar styling */

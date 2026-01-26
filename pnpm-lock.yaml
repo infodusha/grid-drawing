@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@lucide/svelte':
+        specifier: ^0.563.1
+        version: 0.563.1(svelte@5.48.2)
       sv-router:
         specifier: ^0.13.0
         version: 0.13.0(svelte@5.48.2)
@@ -216,6 +219,11 @@ packages:
 
   '@lit/reactive-element@1.6.3':
     resolution: {integrity: sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==}
+
+  '@lucide/svelte@0.563.1':
+    resolution: {integrity: sha512-Kt+MbnE5D9RsuI/csmf7M+HWxALe57x3A0DhQ8pPnnUpneh7zuldrYjlT+veWtk+tVnp5doQtaAAxLujzIlhBw==}
+    peerDependencies:
+      svelte: ^5
 
   '@rollup/rollup-android-arm-eabi@4.56.0':
     resolution: {integrity: sha512-LNKIPA5k8PF1+jAFomGe3qN3bbIgJe/IlpDBwuVjrDKrJhVWywgnJvflMt/zkbVNLFtF1+94SljYQS6e99klnw==}
@@ -688,6 +696,10 @@ snapshots:
   '@lit/reactive-element@1.6.3':
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.5.1
+
+  '@lucide/svelte@0.563.1(svelte@5.48.2)':
+    dependencies:
+      svelte: 5.48.2
 
   '@rollup/rollup-android-arm-eabi@4.56.0':
     optional: true
