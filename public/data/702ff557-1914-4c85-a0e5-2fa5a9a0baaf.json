@@ -1,0 +1,23 @@
+{
+  "moves": [
+    "4RT",
+    "4RB",
+    "2L",
+    "4RB",
+    "3L",
+    "6RB",
+    "7L",
+    "4B",
+    "4L",
+    "4T",
+    "7L",
+    "6RT",
+    "3L",
+    "4RT",
+    "2L"
+  ],
+  "startX": 7,
+  "startY": 6,
+  "gridWidth": 22,
+  "gridHeight": 22
+}
