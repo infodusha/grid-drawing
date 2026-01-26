@@ -20,7 +20,7 @@
       aria-valuenow={current}
       aria-valuemin={0}
       aria-valuemax={total}
-      aria-label="Move progress"
+      aria-label="Прогресс ходов"
     ></div>
   </div>
   <div class="progress-text">

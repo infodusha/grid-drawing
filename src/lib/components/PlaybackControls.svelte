@@ -40,7 +40,7 @@
     class="play-pause-button"
     onclick={handlePlayPause}
     disabled={playbackController === null}
-    aria-label={isPlaying ? "Pause" : "Play"}
+    aria-label={isPlaying ? "Пауза" : "Воспроизведение"}
   >
     {#if isPlaying}
       <svg
@@ -75,7 +75,7 @@
   </button>
 
   <div class="speed-control">
-    <label for="speed-slider">Speed:</label>
+    <label for="speed-slider">Скорость:</label>
     <input
       id="speed-slider"
       type="range"

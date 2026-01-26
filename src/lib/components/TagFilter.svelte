@@ -11,13 +11,13 @@
 
 <div class="filter-container">
   <div class="filter-header">
-    <h2 class="filter-title">Filters</h2>
+    <h2 class="filter-title">Фильтры</h2>
     <button
       class="reset-button"
       onclick={onReset}
       disabled={selectedTags.size === 0}
     >
-      Reset
+      Сбросить
     </button>
   </div>
   <div class="tags-list">

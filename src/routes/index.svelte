@@ -37,13 +37,14 @@
     try {
       const response = await fetch("/data.json");
       if (!response.ok) {
-        throw new Error(`Failed to load data: ${response.statusText}`);
+        throw new Error(`Не удалось загрузить данные: ${response.statusText}`);
       }
       const data = await response.json();
       gridItems = data;
       loading = false;
     } catch (err) {
-      error = err instanceof Error ? err.message : "Unknown error occurred";
+      error =
+        err instanceof Error ? err.message : "Произошла неизвестная ошибка";
       loading = false;
     }
   });
@@ -71,16 +72,16 @@
 </script>
 
 <main>
-  <h1>Grid Drawings</h1>
+  <h1>Графические диктанты</h1>
 
   {#if loading}
     <div class="loading-container">
       <div class="spinner"></div>
-      <p>Loading grids...</p>
+      <p>Загрузка диктантов...</p>
     </div>
   {:else if error}
     <div class="error-container">
-      <p class="error-message">Error: {error}</p>
+      <p class="error-message">Ошибка: {error}</p>
     </div>
   {:else}
     <TagFilter
@@ -96,24 +97,28 @@
         onclick={handleRandomClick}
         disabled={filteredItems.length === 0}
       >
-        Random
+        Случайный
       </button>
       <span class="results-count">
         {filteredItems.length}
-        {filteredItems.length === 1 ? "item" : "items"}
-        {selectedTags.size > 0 ? `(filtered)` : ""}
+        {filteredItems.length === 1
+          ? " элемент"
+          : filteredItems.length < 5
+            ? " элемента"
+            : " элементов"}
+        {selectedTags.size > 0 ? ` (отфильтровано)` : ""}
       </span>
     </div>
 
     {#if gridItems.length === 0}
       <div class="empty-state">
-        <p>No grids available.</p>
+        <p>Нет доступных диктантов.</p>
       </div>
     {:else if filteredItems.length === 0}
       <div class="empty-state">
-        <p>No grids found matching the selected filters.</p>
+        <p>Не найдено диктантов, соответствующих выбранным фильтрам.</p>
         <button class="reset-link-button" onclick={resetFilters}>
-          Clear filters
+          Очистить фильтры
         </button>
       </div>
     {:else}

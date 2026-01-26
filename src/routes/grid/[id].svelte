@@ -57,7 +57,9 @@
       // Load grid data
       const dataResponse = await fetch(`/data/${id}.json`);
       if (!dataResponse.ok) {
-        throw new Error(`Failed to load grid data: ${dataResponse.statusText}`);
+        throw new Error(
+          `Не удалось загрузить данные диктанта: ${dataResponse.statusText}`,
+        );
       }
       const gridData = await dataResponse.json();
       moveSequence = MoveSequence.fromJSON(gridData);
@@ -117,7 +119,8 @@
 
       loading = false;
     } catch (err) {
-      error = err instanceof Error ? err.message : "Unknown error occurred";
+      error =
+        err instanceof Error ? err.message : "Произошла неизвестная ошибка";
       loading = false;
     }
   });
@@ -171,7 +174,6 @@
     }
   });
 
-
   function handlePlay() {
     if (playbackController) {
       playbackController.play();
@@ -204,16 +206,16 @@
   {#if loading}
     <div class="loading-container">
       <div class="spinner"></div>
-      <p>Loading grid...</p>
+      <p>Загрузка диктанта...</p>
     </div>
   {:else if error}
     <div class="error-container">
-      <p class="error-message">Error: {error}</p>
+      <p class="error-message">Ошибка: {error}</p>
     </div>
   {:else if moveSequence}
     <div class="header-section">
       <h1 class="grid-name" class:masked={isMasked}>
-        {gridName || "Untitled Grid"}
+        {gridName || "Без названия"}
       </h1>
       <div class="header-controls">
         <MaskToggle {isMasked} onToggle={toggleMask} />
@@ -243,7 +245,7 @@
       </div>
 
       <div class="move-log-section">
-        <h2 class="move-log-title">Moves</h2>
+        <h2 class="move-log-title">Ходы</h2>
         <MoveLog
           allMoves={moveSequence.moves}
           currentIndex={playbackState.currentMoveIndex}

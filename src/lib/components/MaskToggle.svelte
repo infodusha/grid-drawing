@@ -7,8 +7,12 @@
   let { isMasked, onToggle }: Props = $props();
 </script>
 
-<button class="mask-toggle" onclick={onToggle} aria-label={isMasked ? "Show grid" : "Hide grid"}>
-  {isMasked ? "Show" : "Hide"}
+<button
+  class="mask-toggle"
+  onclick={onToggle}
+  aria-label={isMasked ? "Показать поле" : "Скрыть поле"}
+>
+  {isMasked ? "Показать" : "Скрыть"}
 </button>
 
 <style>

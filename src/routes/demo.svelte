@@ -12,7 +12,7 @@
       );
       moveSequence = MoveSequence.fromJSON(await catData.json());
     } catch (error) {
-      console.error("Failed to load cat.json:", error);
+      console.error("Не удалось загрузить cat.json:", error);
     }
   });
 
@@ -118,8 +118,8 @@
         input.value = "";
       } catch (error) {
         alert(
-          "Failed to import JSON: " +
-            (error instanceof Error ? error.message : "Unknown error"),
+          "Не удалось импортировать JSON: " +
+            (error instanceof Error ? error.message : "Неизвестная ошибка"),
         );
       }
     };
@@ -128,12 +128,12 @@
 </script>
 
 <main>
-  <h1>Grid Drawing</h1>
+  <h1>Демо</h1>
 
   <div class="controls">
     <div class="control-group">
       <label>
-        Grid Width:
+        Ширина поля:
         <input
           type="number"
           value={gridWidth}
@@ -144,7 +144,7 @@
         />
       </label>
       <label>
-        Grid Height:
+        Высота поля:
         <input
           type="number"
           value={gridHeight}
@@ -157,7 +157,7 @@
     </div>
     <div class="control-group">
       <label>
-        Start X:
+        Начало X:
         <input
           type="number"
           value={startX}
@@ -168,7 +168,7 @@
         />
       </label>
       <label>
-        Start Y:
+        Начало Y:
         <input
           type="number"
           value={startY}
@@ -180,14 +180,14 @@
       </label>
     </div>
     <div class="control-group">
-      <button onclick={addMove}>Add Random Move</button>
-      <button onclick={removeMove}>Remove Last Move</button>
-      <button onclick={resetMoves}>Reset Moves</button>
+      <button onclick={addMove}>Добавить случайный ход</button>
+      <button onclick={removeMove}>Удалить последний ход</button>
+      <button onclick={resetMoves}>Сбросить ходы</button>
     </div>
     <div class="control-group">
-      <button onclick={exportJSON}>Export JSON</button>
+      <button onclick={exportJSON}>Экспорт JSON</button>
       <label class="import-button">
-        Import JSON
+        Импорт JSON
         <input
           type="file"
           accept=".json"
@@ -197,8 +197,8 @@
       </label>
     </div>
     <div class="moves-display">
-      <strong>Moves:</strong>
-      {moveSequence.moves.join(", ") || "(none)"}
+      <strong>Ходы:</strong>
+      {moveSequence.moves.join(", ") || "(нет)"}
     </div>
   </div>
 
