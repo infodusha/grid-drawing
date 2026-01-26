@@ -44,8 +44,8 @@
     "3L",
     "2T"
   ],
-  "startX": 3,
-  "startY": 9,
-  "gridWidth": 30,
-  "gridHeight": 30
+  "startX": 2,
+  "startY": 5,
+  "gridWidth": 31,
+  "gridHeight": 16
 }
