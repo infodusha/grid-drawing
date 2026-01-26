@@ -4,5 +4,12 @@ import { router } from "sv-router/vite-plugin";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [svelte(), router()],
+  plugins: [
+    svelte({
+      compilerOptions: {
+        runes: true,
+      },
+    }),
+    router(),
+  ],
 });
