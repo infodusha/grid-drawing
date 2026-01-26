@@ -1,5 +1,6 @@
 import { MoveSequence } from "../../core/MoveSequence";
 import type { PlaybackState } from "../../types";
+import { getMoveValue } from "../../utils/geometry";
 
 export class PlaybackController {
   private moveSequence: MoveSequence;
@@ -17,7 +18,7 @@ export class PlaybackController {
   private remainingDelayTime: number | null = null;
 
   // Base duration per unit of move (in milliseconds)
-  private readonly BASE_DURATION_PER_UNIT = 750;
+  private readonly BASE_DURATION_PER_UNIT = 1000;
 
   constructor(moveSequence: MoveSequence) {
     this.moveSequence = moveSequence;
@@ -29,25 +30,11 @@ export class PlaybackController {
   }
 
   /**
-   * Extract the numeric value from a move string (e.g., "5R" -> 5)
-   * Adds an extra unit if the move has 2 directions (e.g., "2RB" -> 3)
-   */
-  private getMoveValue(move: string): number {
-    const match = move.match(/^(\d+)([LRTB]+)$/);
-    if (!match) return 1;
-
-    const value = parseInt(match[1], 10);
-    const directions = match[2];
-
-    // Add an extra unit if move has 2 directions
-    return directions.length === 2 ? value + 1 : value;
-  }
-
-  /**
    * Calculate the duration for a specific move based on its value
+   * Uses square root scaling to make small values slower and large values faster
    */
   private getMoveDuration(move: string): number {
-    const moveValue = this.getMoveValue(move);
+    const moveValue = getMoveValue(move);
     return (
       (this.BASE_DURATION_PER_UNIT * moveValue) / this.state.speedMultiplier
     );

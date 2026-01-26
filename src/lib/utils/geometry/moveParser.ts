@@ -30,3 +30,13 @@ export function parseMove(move: string): { dx: number; dy: number } {
 
   return { dx, dy };
 }
+
+export function getMoveValue(move: string): number {
+  const match = move.match(/^(\d+)([LRTB]+)$/);
+  if (!match) return 1;
+
+  const value = parseInt(match[1], 10);
+  const directions = match[2];
+
+  return Math.sqrt(directions.length === 2 ? 2 * value + 1 : 2 * value);
+}

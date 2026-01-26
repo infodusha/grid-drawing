@@ -55,15 +55,15 @@
     <label for="speed-slider">Скорость:</label>
     <wired-slider
       id="speed-slider"
-      min="0.25"
-      max="3"
-      step="0.25"
+      min="0.2"
+      max="2"
+      step="0.2"
       value={speedValue}
       onchange={handleSliderChange}
       disabled={playbackController === null}
       class="speed-slider"
     ></wired-slider>
-    <span class="speed-value">{speedValue.toFixed(2)}x</span>
+    <span class="speed-value">{speedValue.toFixed(1)}x</span>
   </div>
 </div>
 
