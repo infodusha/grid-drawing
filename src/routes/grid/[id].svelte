@@ -225,7 +225,7 @@
   {:else if moveSequence}
     <div class="header-section">
       <h1 class="grid-name" class:masked={isMasked}>
-        {gridName || "Без названия"}
+        {gridName}
       </h1>
       <div class="header-controls">
         <MaskToggle {isMasked} onToggle={toggleMask} />
@@ -250,12 +250,25 @@
     </div>
 
     <div class="content-grid">
-      <div class="grid-section" class:masked={isMasked}>
-        <Grid
-          moveSequence={partialMoveSequence}
-          {animationDuration}
-          isPlaying={playbackState.isPlaying}
-        />
+      <div class="grid-section">
+        <div>
+          <div class="grid-info">
+            <span class="info-item">
+              Начало: ({moveSequence.startX}, {moveSequence.startY})
+            </span>
+            <span class="info-item">
+              Размер холста: {moveSequence.gridWidth} × {moveSequence.gridHeight}
+            </span>
+          </div>
+
+          <div class="grid-section-content" class:masked={isMasked}>
+            <Grid
+              moveSequence={partialMoveSequence}
+              {animationDuration}
+              isPlaying={playbackState.isPlaying}
+            />
+          </div>
+        </div>
       </div>
 
       <div class="move-log-section">
@@ -343,6 +356,25 @@
     pointer-events: none;
   }
 
+  .grid-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+  }
+
+  .grid-info {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+  }
+
+  .info-item {
+    white-space: nowrap;
+  }
+
   .header-controls {
     display: flex;
     gap: 1rem;
@@ -363,11 +395,7 @@
     align-items: start;
   }
 
-  .grid-section {
-    transition: all 0.3s ease;
-  }
-
-  .grid-section.masked {
+  .grid-section-content.masked {
     filter: blur(12px);
     opacity: 0.2;
     pointer-events: none;
@@ -409,6 +437,11 @@
 
     .grid-name {
       font-size: 1.5rem;
+    }
+
+    .grid-info {
+      font-size: 0.85rem;
+      gap: 0.75rem;
     }
   }
 </style>
