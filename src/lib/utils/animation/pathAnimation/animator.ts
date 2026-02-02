@@ -122,24 +122,15 @@ export function updatePathAnimation(
 
   // If moves changed while paused, update target but don't start animation
   if (state.isPaused) {
-    // Calculate what the new target should be
-    const currentAnimated = state.animatedLength.current;
-    if (currentPathLength > currentAnimated) {
-      state.pausedTarget = currentPathLength;
-      state.pausedRemainingDuration =
-        state.customDuration ??
-        Math.max(
-          200,
-          Math.min(500, (currentPathLength - currentAnimated) * 1.5),
-        );
-    } else if (currentPathLength < currentAnimated) {
-      state.pausedTarget = currentPathLength;
-      state.pausedRemainingDuration = Math.max(
-        200,
-        Math.min(500, (currentAnimated - currentPathLength) * 1.5),
-      );
+    if (state.backwardsAnimationTimeout) {
+      clearTimeout(state.backwardsAnimationTimeout);
+      state.backwardsAnimationTimeout = null;
     }
-    // Update previous moves so we don't process this change again
+    state.isAnimatingBackwards = false;
+    state.pausedTarget = null;
+    state.pausedRemainingDuration = null;
+    state.animationStartTime = null;
+    state.animatedLength.set(currentPathLength, { duration: 0 });
     state.previousMoves = [...currentMoves];
     state.previousPathString = currentPathString;
     state.previousPathLength = currentPathLength;

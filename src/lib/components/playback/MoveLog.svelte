@@ -4,9 +4,10 @@
   interface Props {
     allMoves: string[];
     currentIndex: number;
+    onSeek: (index: number) => void;
   }
 
-  let { allMoves, currentIndex }: Props = $props();
+  let { allMoves, currentIndex, onSeek }: Props = $props();
 
   let logContainer: HTMLDivElement;
 
@@ -70,15 +71,17 @@
       {@const isPast = index < actualCurrentIndex}
       {@const isCurrent = index === actualCurrentIndex}
       {@const isFuture = index > actualCurrentIndex}
-      <div
+      <wired-button
         class="move-item"
         class:past={isPast}
         class:current={isCurrent}
         class:future={isFuture}
+        onclick={() => onSeek(index)}
+        aria-current={isCurrent ? 'true' : undefined}
       >
         <span class="move-number">{index + 1}.</span>
         <MoveDisplay {move} />
-      </div>
+      </wired-button>
     {/each}
   </div>
 </div>
@@ -108,6 +111,10 @@
     border-radius: 6px;
     transition: all 0.3s ease;
     font-family: monospace;
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+    cursor: pointer;
   }
 
   .move-item.past {
@@ -126,6 +133,22 @@
   .move-item.future {
     color: var(--color-text-muted);
     font-size: 0.95em;
+  }
+
+  .move-item:hover {
+    transform: translateY(-1px);
+  }
+
+  .move-item.current:hover {
+    transform: scale(1.02);
+  }
+
+  .move-item:active {
+    transform: translateY(0);
+  }
+
+  .move-item.current:active {
+    transform: scale(1.02);
   }
 
   .move-number {

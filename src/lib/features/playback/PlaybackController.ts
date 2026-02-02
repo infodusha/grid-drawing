@@ -304,6 +304,32 @@ export class PlaybackController {
   }
 
   /**
+   * Seek to a specific revealed-moves index (0..length)
+   * Optionally resumes playback if it was playing (or resume is true)
+   */
+  seekToIndex(index: number, options: { resume?: boolean } = {}) {
+    const clampedIndex = Math.max(
+      0,
+      Math.min(index, this.moveSequence.moves.length),
+    );
+    const wasPlaying = this.state.isPlaying;
+    const shouldResume = options.resume ?? wasPlaying;
+
+    this.clearTimeouts();
+    this.state.isPlaying = false;
+    this.state.currentMoveIndex = clampedIndex;
+    this.startTime = null;
+    this.pausedTime = 0;
+    this.remainingDelayTime = null;
+    this.currentMoveDelayStartTime = null;
+    this.notifyStateChange();
+
+    if (shouldResume && clampedIndex < this.moveSequence.moves.length) {
+      this.play();
+    }
+  }
+
+  /**
    * Cleanup resources
    */
   destroy() {

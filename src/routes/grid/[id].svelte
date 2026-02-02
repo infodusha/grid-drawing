@@ -196,6 +196,20 @@
     }
   }
 
+  function handleSeekToMove(moveIndex: number) {
+    if (!playbackController) return;
+
+    const shouldResume = playbackState.isPlaying;
+    const revealedIndex = shouldResume ? moveIndex : moveIndex + 1;
+
+    if (speechAnnouncer) {
+      speechAnnouncer.cancel();
+    }
+
+    animationDuration = null;
+    playbackController.seekToIndex(revealedIndex, { resume: shouldResume });
+  }
+
   function toggleMask() {
     isMasked = !isMasked;
     if (isMasked) {
@@ -265,6 +279,7 @@
         <MoveLog
           allMoves={moveSequence.moves}
           currentIndex={playbackState.currentMoveIndex}
+          onSeek={handleSeekToMove}
         />
       </div>
     </div>
